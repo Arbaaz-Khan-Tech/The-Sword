@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOS - Citizen Safety App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#ff6b00',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .sidebar {
+            transition: width 0.3s ease;
+        }
+        .sidebar.collapsed {
+            width: 64px;
+        }
+        .sidebar.expanded {
+            width: 250px;
+        }
+        .menu-text {
+            transition: opacity 0.3s ease;
+        }
+        .sidebar.collapsed .menu-text {
+            opacity: 0;
+            display: none;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-200">
+    <!-- Top Navigation -->
+    <nav class="bg-white dark:bg-gray-800 shadow-md fixed w-full top-0 z-50 transition-colors duration-200">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <button id="sidebarToggle" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full mr-2 transition-colors duration-200">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="text-xl font-bold dark:text-white">Citizen</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="darkModeToggle" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors duration-200">
+                        <i class="fas fa-moon dark:text-white"></i>
+                    </button>
+                    <button class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors duration-200">
+                        <i class="fas fa-question-circle dark:text-white"></i>
+                    </button>
+                    <button class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors duration-200">
+                        <i class="fas fa-bell dark:text-white"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar expanded fixed left-0 top-16 h-screen bg-white dark:bg-gray-800 shadow-lg z-40 transition-colors duration-200">
+        <div class="py-4">
+            <a href="sos.html" class="flex items-center px-4 py-3 text-primary hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
+                <i class="fas fa-exclamation-circle w-6"></i>
+                <span class="menu-text ml-2 font-medium">SOS</span>
+            </a>
+            <a href="#" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
+                <i class="fas fa-flag w-6"></i>
+                <span class="menu-text ml-2">Report Incident</span>
+            </a>
+            <a href="incident-alerts.html" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
+                <i class="fas fa-bell w-6"></i>
+                <span class="menu-text ml-2">Incident Alerts</span>
+            </a>
+            <a href="real-time-map.html" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
+                <i class="fas fa-map w-6"></i>
+                <span class="menu-text ml-2">Real-Time Map</span>
+            </a>
+            <a href="geofencing.html" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
+                <i class="fas fa-map-marker-alt w-6"></i>
+                <span class="menu-text ml-2">Geofencing</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="transition-all duration-300" id="mainContent">
+        <div class="container mx-auto px-4 mt-20">
+            <div class="flex flex-col items-center justify-center min-h-[calc(100vh-5rem)]">
+                <h2 class="text-3xl font-bold mb-8 text-center dark:text-white">SOS Emergency</h2>
+                <button id="sosButton" class="bg-red-600 hover:bg-red-700 text-white font-bold py-8 px-16 rounded-full text-2xl shadow-lg animate-pulse transition-colors duration-200">
+                    ACTIVATE SOS
+                </button>
+                <p id="sosStatus" class="mt-8 text-lg font-semibold dark:text-white hidden">SOS Activated: Sending your location...</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const sosButton = document.getElementById('sosButton');
+            const sosStatus = document.getElementById('sosStatus');
+            
+            function updateMainContentMargin() {
+                if (sidebar.classList.contains('collapsed')) {
+                    mainContent.style.marginLeft = '64px';
+                } else {
+                    mainContent.style.marginLeft = '250px';
+                }
+            }
+
+            // Initial margin
+            updateMainContentMargin();
+
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('collapsed');
+                sidebar.classList.toggle('expanded');
+                updateMainContentMargin();
+            });
+
+            // Dark mode toggle
+            darkModeToggle.addEventListener('click', function() {
+                document.documentElement.classList.toggle('dark');
+                const isDarkMode = document.documentElement.classList.contains('dark');
+                localStorage.setItem('darkMode', isDarkMode);
+                darkModeToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            });
+
+            // Check for saved dark mode preference
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.documentElement.classList.add('dark');
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+
+            // SOS Button functionality
+            sosButton.addEventListener('click', function() {
+                sosButton.classList.remove('animate-pulse');
+                sosButton.classList.add('bg-gray-500');
+                sosButton.disabled = true;
+                sosButton.textContent = 'SOS ACTIVATED';
+                sosStatus.classList.remove('hidden');
+                
+                // Simulating SOS activation
+                setTimeout(() => {
+                    sosStatus.textContent = 'SOS Activated: Emergency services notified. Help is on the way.';
+                }, 3000);
+            });
+        });
+    </script>
+</body>
+</html>
+
