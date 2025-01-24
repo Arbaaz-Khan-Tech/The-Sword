@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Violence & Arms Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        video {
+            border: 2px solid black;
+            margin-top: 20px;
+        }
+        #alerts {
+            margin-top: 20px;
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Real-Time Violence & Arms Detection</h1>
+    <video id="video" autoplay></video>
+    <div id="alerts">No alerts yet...</div>
+
+    <script>
+        const video = document.getElementById("video");
+        const alertsDiv = document.getElementById("alerts");
+
+        // Access webcam
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then((stream) => {
+                video.srcObject = stream;
+            })
+            .catch((err) => {
+                console.error("Error accessing webcam:", err);
+            });
+
+        // Function to send video frames to the server
+        async function sendFrame() {
+            const canvas = document.createElement("canvas");
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg"));
+
+            const formData = new FormData();
+            formData.append("image", blob);
+
+            const response = await fetch("https://major-parks-flow.loca.lt/detect", { method: "POST", body: formData });
+            const detections = await response.json();
+
+            if (detections.length > 0) {
+                alertsDiv.innerHTML = "ALERT: " + detections.map(d => `${d.label} (${Math.round(d.confidence * 100)}%)`).join(", ");
+            } else {
+                alertsDiv.innerHTML = "No alerts.";
+            }
+        }
+
+        // Send frames at regular intervals
+        setInterval(sendFrame, 1000); // Adjust interval as needed (1000ms = 1s)
+    </script>
+</body>
+</html>

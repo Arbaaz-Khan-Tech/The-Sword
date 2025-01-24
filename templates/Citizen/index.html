@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}
+Home - Citizen Safety App
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 mt-20">
+    <h1 class="text-3xl font-bold dark:text-white mb-6">Welcome to Citizen Safety App</h1>
+
+    <div class="grid grid-cols-3 gap-6">
+        <!-- Feature Cards -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 transition-colors duration-200">
+            <h2 class="text-xl font-semibold dark:text-white mb-2">Report Incidents</h2>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">Report suspicious activities or emergencies to ensure safety.</p>
+            <a href="report-incident.html" class="text-primary hover:underline">Learn More</a>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 transition-colors duration-200">
+            <h2 class="text-xl font-semibold dark:text-white mb-2">Real-Time Map</h2>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">View incidents happening around you in real-time.</p>
+            <a href="real-time-map.html" class="text-primary hover:underline">View Map</a>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 transition-colors duration-200">
+            <h2 class="text-xl font-semibold dark:text-white mb-2">SOS Alerts</h2>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">Quickly alert responders in case of an emergency.</p>
+            <a href="sos.html" class="text-primary hover:underline">Activate SOS</a>
+        </div>
+    </div>
+
+    <!-- Announcements or Updates -->
+    <div class="mt-10 bg-white dark:bg-gray-800 rounded-lg shadow p-6 transition-colors duration-200">
+        <h2 class="text-2xl font-semibold dark:text-white mb-4">Latest Updates</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">Stay updated with the latest news and safety tips from the Citizen Safety App team.</p>
+        <ul class="list-disc list-inside text-gray-600 dark:text-gray-400">
+            <li>New Geofencing feature added to help users set safety boundaries.</li>
+            <li>Improved real-time map for better visualization of incidents.</li>
+            <li>Dark mode now available for a more comfortable experience.</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
