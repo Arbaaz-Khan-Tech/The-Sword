@@ -35,7 +35,28 @@
             opacity: 0;
             display: none;
         }
+
+
+/* ye submit ke baad wala sucess animation hai */
+@keyframes checkmark-pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.3);
+        opacity: 0.7;
+    }
+}
+
+/* Infinite animation for the green circle */
+.animate-checkmark {
+    animation: checkmark-pulse 1.5s infinite ease-in-out;
+}
+
+
     </style>
+
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-200">
     <!-- Top Navigation -->
@@ -96,72 +117,120 @@
 
     <!-- Main Content -->
     <main class="transition-all duration-300" id="mainContent">
-        <div class="container mx-auto px-4 mt-20">
-            <h2 class="text-2xl font-bold mb-4 dark:text-white">Incident Report</h2>
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                <form id="incidentReportForm">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="incidentType" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Incident Type</label>
-                            <select id="incidentType" name="incidentType" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white dark:border-gray-600">
-                                <option value="">Select Incident Type</option>
-                                <option value="theft">Theft</option>
-                                <option value="assault">Assault</option>
-                                <option value="burglary">Burglary</option>
-                                <option value="vandalism">Vandalism</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="dateTime" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date and Time</label>
-                            <input type="datetime-local" id="dateTime" name="dateTime" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white dark:border-gray-600">
-                        </div>
-                        <div>
-                            <label for="location" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Location</label>
-                            <input type="text" id="location" name="location" placeholder="Enter incident location" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white dark:border-gray-600">
-                        </div>
-                        <div>
-                            <label for="reportingOfficer" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Reporting Officer</label>
-                            <input type="text" id="reportingOfficer" name="reportingOfficer" placeholder="Enter officer name" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white dark:border-gray-600">
-                        </div>
-                    </div>
-                    <div class="mt-6">
-                        <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Incident Description</label>
-                        <textarea id="description" name="description" rows="4" placeholder="Provide a detailed description of the incident" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white dark:border-gray-600"></textarea>
-                    </div>
-                    <div class="mt-6">
-                        <label for="evidence" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Evidence</label>
-                        <input type="file" id="evidence" name="evidence" multiple class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white dark:border-gray-600">
-                    </div>
-                    <div class="mt-6">
-                        <button type="submit" class="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark transition-colors duration-200">Submit Report</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </main>
+    <div class="container mx-auto px-4 mt-16">
+        <h2 class="text-2xl font-bold mb-6 dark:text-white">Incident Alerts</h2>
 
-    <!-- Bottom Notifications Bar -->
-    <div class="fixed bottom-0 left-0 right-0 bg-gray-200 dark:bg-gray-700 p-2 transition-colors duration-200">
-        <div class="container mx-auto">
-            <div class="overflow-hidden h-6">
-                <div class="animate-marquee whitespace-nowrap">
-                    <span class="text-gray-800 dark:text-gray-200 mx-4">SOS: Robbery in progress at 123 Main St</span>
-                    <span class="text-gray-800 dark:text-gray-200 mx-4">Incident: Traffic accident reported on Highway 101</span>
-                    <span class="text-gray-800 dark:text-gray-200 mx-4">Alert: Suspicious activity detected in CCTV feed #7</span>
+        <!-- Incident Container -->
+        {% for incident in incidents %}
+        <div class="border-l-4 rounded-lg shadow-md p-4 mb-6 
+            {% if incident.priority_type == 'high' %} border-red-500 bg-red-100 dark:bg-red-900 
+            {% elif incident.priority_type == 'medium' %} border-yellow-500 bg-yellow-100 dark:bg-yellow-900 
+            {% else %} border-green-500 bg-green-100 dark:bg-green-900 {% endif %}">
+
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-semibold {% if incident.priority_type == 'high' %} text-red-700 {% elif incident.priority_type == 'medium' %} text-yellow-700 {% else %} text-green-700 {% endif %} dark:text-white">
+                    {{ incident.incident_type }}
+                    <span class="px-2 py-1 rounded-full text-sm font-medium
+                    {% if incident.status_type == 'pending' %} bg-red-200 text-red-800 
+                    {% elif incident.status_type == 'ongoing' %} bg-yellow-200 text-yellow-800 
+                    {% else %} bg-green-200 text-green-800 {% endif %}">
+                    {{ incident.status_type | capitalize }}
+                </span>
+                </h3>
+                <span class="px-2 py-1 rounded-full text-sm font-medium
+                    {% if incident.priority_type == 'high' %} bg-red-200 text-red-800 
+                    {% elif incident.priority_type == 'medium' %} bg-yellow-200 text-yellow-800 
+                    {% else %} bg-green-200 text-green-800 {% endif %}">
+                    {{ incident.priority_type | capitalize }}
+                </span>
+                
+            </div>
+            <p class="mt-2 dark:text-gray-400">Location: {{ incident.location }}</p>
+            <p class="dark:text-gray-400">Date/Time: {{ incident.date_time }}</p>
+            <p class="dark:text-gray-400">Reporting Officer: {{ incident.reporting_officer }}</p>
+            <p class="dark:text-gray-400">Notice: {{ incident.notice }}</p>
+
+            <!-- Action Buttons -->
+            <div class="mt-4 flex justify-between">
+                <!-- Buttons disappear if status is solved -->
+                {% if incident.status_type != 'solved' %}
+                <div class="flex space-x-2">
+                    <button onclick="updateStatus('{{ incident._id }}', 'pending')" 
+                        class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">Pending</button>
+                    <button onclick="updateStatus('{{ incident._id }}', 'ongoing')" 
+                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Ongoing</button>
+                    <button onclick="updateStatus('{{ incident._id }}', 'solved')" 
+                        class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Solved</button>
+                </div>
+                {% endif %}
+                <!-- Expand Button -->
+                <button onclick="toggleDetails('{{ incident._id }}')" 
+                    class="text-gray-500 hover:text-gray-800 dark:hover:text-gray-300">More Details ↓</button>
+            </div>
+
+            <!-- Expandable Details -->
+            <div id="details-{{ incident._id }}" class="hidden mt-4">
+                <p class="dark:text-gray-400">Description: {{ incident.description }}</p>
+                <div class="mt-2">
+                    <h4 class="text-sm font-medium dark:text-gray-300">Evidence Files:</h4>
+                    <div class="grid grid-cols-2 gap-4 mt-2">
+                        {% for file in incident.evidence_files %}
+                            {% if file.endswith('.jpg') or file.endswith('.jpeg') or file.endswith('.png') or file.endswith('.gif') %}
+                            <!-- Display Image -->
+                            <img src="{{ file }}" alt="Evidence" class="rounded-lg shadow-md">
+                            {% elif file.endswith('.mp4') or file.endswith('.webm') or file.endswith('.ogg') %}
+                            <!-- Display Video -->
+                            <video controls class="rounded-lg shadow-md">
+                                <source src="{{ file }}" type="video/{{ file.split('.')[-1] }}">
+                                Your browser does not support the video tag.
+                            </video>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    
                 </div>
             </div>
         </div>
+        {% endfor %}
     </div>
+</main>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        // Toggle Details Visibility
+        function toggleDetails(id) {
+            const details = document.getElementById(`details-${id}`);
+            details.classList.toggle('hidden');
+        }
+
+        // Update Incident Status
+        async function updateStatus(incidentId, status) {
+            try {
+                const response = await fetch(`/police/update-incident-status/${incidentId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status })
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    alert(result.message);
+                    location.reload(); // Reload the page to reflect changes
+                } else {
+                    alert(result.error);
+                }
+            } catch (error) {
+                console.error('Error updating status:', error);
+                alert('Failed to update incident status.');
+            }
+        }
+
+              document.addEventListener('DOMContentLoaded', function() {
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('mainContent');
             const sidebarToggle = document.getElementById('sidebarToggle');
             const darkModeToggle = document.getElementById('darkModeToggle');
-            const incidentReportForm = document.getElementById('incidentReportForm');
-            
+  
             function updateMainContentMargin() {
                 if (sidebar.classList.contains('collapsed')) {
                     mainContent.style.marginLeft = '64px';
@@ -192,17 +261,8 @@
                 document.documentElement.classList.add('dark');
                 darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
             }
-
-            // Handle form submission
-            incidentReportForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                // Here you would typically send the form data to a server
-                console.log('Form submitted');
-                alert('Incident report submitted successfully!');
-                incidentReportForm.reset();
-            });
+        
         });
     </script>
 </body>
 </html>
-

@@ -35,7 +35,28 @@
             opacity: 0;
             display: none;
         }
+
+
+/* ye submit ke baad wala sucess animation hai */
+@keyframes checkmark-pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.3);
+        opacity: 0.7;
+    }
+}
+
+/* Infinite animation for the green circle */
+.animate-checkmark {
+    animation: checkmark-pulse 1.5s infinite ease-in-out;
+}
+
+
     </style>
+
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-200">
     <!-- Top Navigation -->
@@ -99,7 +120,7 @@
         <div class="container mx-auto px-4 mt-20">
             <h2 class="text-2xl font-bold mb-4 dark:text-white">Incident Report</h2>
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                <form id="incidentReportForm">
+                <form id="incidentReportForm" action="#" method="POST" enctype="multipart/form-data">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="incidentType" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Incident Type</label>
@@ -124,6 +145,28 @@
                             <label for="reportingOfficer" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Reporting Officer</label>
                             <input type="text" id="reportingOfficer" name="reportingOfficer" placeholder="Enter officer name" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white dark:border-gray-600">
                         </div>
+                        <div>
+                            <label for="statusType" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status Type</label>
+                            <select id="statusType" name="statusType" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white dark:border-gray-600">
+                                <option value="">Select Status Type</option>
+                                <option value="ongoing">Ongoing</option>
+                                <option value="solved">Solved</option>
+                                <option value="pending">Pending</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="priorityType" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Priority Type</label>
+                            <select id="priorityType" name="priorityType" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white dark:border-gray-600">
+                                <option value="">Select Priority Type</option>
+                                <option value="high">High</option>
+                                <option value="medium">Medium</option>
+                                <option value="low">Low</option>
+                             </select>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <label for="notice" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Incident Notice</label>
+                        <textarea id="notice" name="notice" rows="1" placeholder="Provide a detailed notice of the incident" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white dark:border-gray-600"></textarea>
                     </div>
                     <div class="mt-6">
                         <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Incident Description</label>
@@ -141,18 +184,40 @@
         </div>
     </main>
 
-    <!-- Bottom Notifications Bar -->
-    <div class="fixed bottom-0 left-0 right-0 bg-gray-200 dark:bg-gray-700 p-2 transition-colors duration-200">
-        <div class="container mx-auto">
-            <div class="overflow-hidden h-6">
-                <div class="animate-marquee whitespace-nowrap">
-                    <span class="text-gray-800 dark:text-gray-200 mx-4">SOS: Robbery in progress at 123 Main St</span>
-                    <span class="text-gray-800 dark:text-gray-200 mx-4">Incident: Traffic accident reported on Highway 101</span>
-                    <span class="text-gray-800 dark:text-gray-200 mx-4">Alert: Suspicious activity detected in CCTV feed #7</span>
-                </div>
+
+
+    <!-- Success Modal submit ke baad dikhega -->
+<div id="successModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-1/3 relative">
+        <!-- Close Button -->
+        <button id="closeModalButton" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+            <i class="fas fa-times text-xl"></i>
+        </button>
+
+        <!-- Success Checkmark Animation -->
+        <div class="flex justify-center mb-4">
+            <div class="bg-green-500 rounded-full w-16 h-16 flex items-center justify-center animate-checkmark">
+                <svg xmlns="http://www.w3.org/2000/svg" class="text-white w-8 h-8 checkmark" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M16.704 5.296a1 1 0 01.02 1.415l-7.002 8.005a1 1 0 01-1.479.023l-4.003-4.004a1 1 0 011.414-1.414l3.293 3.293 6.293-7.194a1 1 0 011.464-.124z" clip-rule="evenodd" />
+                </svg>
             </div>
         </div>
+
+        <!-- Success Message -->
+        <h2 class="text-xl font-bold text-green-600 text-center mb-4">Success!</h2>
+        <p class="text-gray-700 text-center mb-6">The incident report has been submitted successfully.</p>
+
+        <!-- Incident ID -->
+        <p class="text-center text-gray-500">
+            <span class="font-bold">Incident ID:</span> 
+            <span id="incidentId" class="text-gray-800 font-mono"></span>
+        </p>
     </div>
+</div>
+
+
+
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -161,7 +226,10 @@
             const sidebarToggle = document.getElementById('sidebarToggle');
             const darkModeToggle = document.getElementById('darkModeToggle');
             const incidentReportForm = document.getElementById('incidentReportForm');
-            
+            const successModal = document.getElementById('successModal');
+            const closeModalButton = document.getElementById('closeModalButton');
+            const incidentIdElement = document.getElementById('incidentId');
+
             function updateMainContentMargin() {
                 if (sidebar.classList.contains('collapsed')) {
                     mainContent.style.marginLeft = '64px';
@@ -194,14 +262,43 @@
             }
 
             // Handle form submission
-            incidentReportForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                // Here you would typically send the form data to a server
-                console.log('Form submitted');
-                alert('Incident report submitted successfully!');
-                incidentReportForm.reset();
-            });
+            incidentReportForm.addEventListener('submit', function (e) {
+            e.preventDefault(); // Prevent default form submission
+
+            const formData = new FormData(incidentReportForm);
+
+            fetch('/police/incident-report', {
+                method: 'POST',
+                body: formData,
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        // Show the success modal
+                        incidentIdElement.textContent = data.incident_id; // Set the incident ID
+                        successModal.classList.remove('hidden');
+                        successModal.classList.add('flex');
+
+                        // Reset the form
+                        incidentReportForm.reset();
+                    } else if (data.error) {
+                        alert('Error: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while submitting the form.');
+                });
         });
+
+        // Close the modal when the close button is clicked
+        closeModalButton.addEventListener('click', function () {
+            successModal.classList.add('hidden');
+            successModal.classList.remove('flex');
+        });
+        });
+            
+       
     </script>
 </body>
 </html>
