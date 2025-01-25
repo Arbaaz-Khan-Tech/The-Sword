@@ -123,12 +123,12 @@
                 <!-- CCTV Feed 1 -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
                     <div class="relative">
-                        <img id="webcam-feed" src="/video_feed" alt="CCTV Feed 1" class="w-full h-48 object-cover rounded-lg cursor-pointer feed-image" data-feed="1">
+                        <img src="/video_feed"  alt="CCTV Feed 1" class="w-full h-48 object-cover rounded-lg cursor-pointer feed-image" data-feed="1">
                         <span class="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs">Normal</span>
                     </div>
                      <h3 class="text-lg font-semibold mt-2 dark:text-white">Camera #1 - Main Street</h3>
                     <p class="text-gray-600 dark:text-gray-300 text-sm">Real-time status updates below:</p>
-                    <div id="alert" style="color: red; font-weight: bold; margin-top: 20px;"></div>
+                    <div id="notifications" style="color: red; font-weight: bold; margin-top: 20px;"></div>
 
                 </div>
 
@@ -238,7 +238,7 @@
         });
     </script>
 
-    <script>
+    <!-- <script>
 
 
         const socket = io();
@@ -291,7 +291,60 @@ async function sendFrame(imageBlob) {
     console.log(data); // Display detected objects
     return data;
 }
+</script> -->
+
+<script>
+    const notificationDiv = document.getElementById('notifications');
+
+    // Function to request notification permission
+    function requestNotificationPermission() {
+        if (Notification.permission !== 'granted') {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    console.log('Notification permission granted.');
+                }
+            });
+        }
+    }
+
+    // Function to show a system notification
+    function showSystemNotification(message) {
+        if (Notification.permission === 'granted') {
+            new Notification('Detection Alert', {
+                body: message,
+                icon: '/static/alert-icon.png' // Optional: Add an icon for the notification
+            });
+        } else {
+            console.log('Notification permission not granted.');
+        }
+    }
+
+    // Fetch detections and show notifications
+    function fetchDetections() {
+        fetch('/detections')
+            .then(response => response.json())
+            .then(data => {
+                if (data.detected_objects.length > 0) {
+                    const timestamp = new Date().toLocaleTimeString();
+                    data.detected_objects.forEach(obj => {
+                        const notification = document.createElement('div');
+                        notification.textContent = `Detected: ${obj} at ${timestamp}`;
+                        notificationDiv.appendChild(notification);
+
+                        // Show system notification
+                        showSystemNotification(`Detected: ${obj} at ${timestamp}`);
+                    });
+                }
+            });
+    }
+
+    // Request notification permission when the page loads
+    requestNotificationPermission();
+
+    // Check for detections every second
+    setInterval(fetchDetections, 1000);
 </script>
+
 
 </body>
 </html>
