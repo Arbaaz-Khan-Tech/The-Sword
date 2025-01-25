@@ -95,46 +95,80 @@
 
     <!-- Main Content -->
     <main class="transition-all duration-300" id="mainContent">
-        <div class="container mx-auto px-4 mt-20">
-            <h2 class="text-2xl font-bold mb-4 dark:text-white">Incident Alerts</h2>
-            <div class="grid gap-4">
-                <!-- High Priority Incident -->
-                <div class="bg-red-100 dark:bg-red-900 border-l-4 border-red-500 rounded-lg shadow-md p-4">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-semibold text-red-700 dark:text-red-300">Active Shooter</h3>
-                        <span class="bg-red-200 dark:bg-red-800 text-red-800 dark:text-red-200 px-2 py-1 rounded-full text-sm">High Priority</span>
-                    </div>
-                    <p class="text-red-600 dark:text-red-400 mt-2">Location: Downtown, Main St & 5th Ave</p>
-                    <p class="text-red-600 dark:text-red-400">Distance: 0.5 miles away</p>
-                    <p class="text-red-600 dark:text-red-400 mt-2">Police are responding. Stay indoors and avoid the area.</p>
+        <div class="container mx-auto px-4 mt-16">
+            <h2 class="text-2xl font-bold mb-6 dark:text-white">Incident Alerts</h2>
+    
+            <!-- Incident Container -->
+            {% for incident in incidents %}
+            <div class="border-l-4 rounded-lg shadow-md p-4 mb-6 
+                {% if incident.priority_type == 'high' %} border-red-500 bg-red-100 dark:bg-red-900 
+                {% elif incident.priority_type == 'medium' %} border-yellow-500 bg-yellow-100 dark:bg-yellow-900 
+                {% else %} border-green-500 bg-green-100 dark:bg-green-900 {% endif %}">
+    
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold {% if incident.priority_type == 'high' %} text-red-700 {% elif incident.priority_type == 'medium' %} text-yellow-700 {% else %} text-green-700 {% endif %} dark:text-white">
+                        {{ incident.incident_type }}
+                        <span class="px-2 py-1 rounded-full text-sm font-medium
+                        {% if incident.status_type == 'pending' %} bg-red-200 text-red-800 
+                        {% elif incident.status_type == 'ongoing' %} bg-yellow-200 text-yellow-800 
+                        {% else %} bg-green-200 text-green-800 {% endif %}">
+                        {{ incident.status_type | capitalize }}
+                    </span>
+                    </h3>
+                    <span class="px-2 py-1 rounded-full text-sm font-medium
+                        {% if incident.priority_type == 'high' %} bg-red-200 text-red-800 
+                        {% elif incident.priority_type == 'medium' %} bg-yellow-200 text-yellow-800 
+                        {% else %} bg-green-200 text-green-800 {% endif %}">
+                        {{ incident.priority_type | capitalize }}
+                    </span>
+                    
                 </div>
-
-                <!-- Medium Priority Incident -->
-                <div class="bg-yellow-100 dark:bg-yellow-900 border-l-4 border-yellow-500 rounded-lg shadow-md p-4">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-semibold text-yellow-700 dark:text-yellow-300">Traffic Accident</h3>
-                        <span class="bg-yellow-200 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded-full text-sm">Medium Priority</span>
-                    </div>
-                    <p class="text-yellow-600 dark:text-yellow-400 mt-2">Location: Highway 101, Northbound</p>
-                    <p class="text-yellow-600 dark:text-yellow-400">Distance: 2.3 miles away</p>
-                    <p class="text-yellow-600 dark:text-yellow-400 mt-2">Multi-vehicle collision. Expect delays and use alternate routes if possible.</p>
+                <p class="mt-2 dark:text-gray-400">Location: {{ incident.location }}</p>
+                <p class="dark:text-gray-400">Date/Time: {{ incident.date_time }}</p>
+                <p class="dark:text-gray-400">Reporting Officer: {{ incident.reporting_officer }}</p>
+                <p class="dark:text-gray-400">Notice: {{ incident.notice }}</p>
+    
+                <!-- Action Buttons -->
+                <div class="mt-4 flex justify-between">
+                    <!-- Expand Button -->
+                    <button onclick="toggleDetails('{{ incident._id }}')" 
+                        class="text-gray-500 hover:text-gray-800 dark:hover:text-gray-300">More Details ↓</button>
                 </div>
-
-                <!-- Low Priority Incident -->
-                <div class="bg-blue-100 dark:bg-blue-900 border-l-4 border-blue-500 rounded-lg shadow-md p-4">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-semibold text-blue-700 dark:text-blue-300">Power Outage</h3>
-                        <span class="bg-blue-200 dark:bg-blue-800 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full text-sm">Low Priority</span>
+    
+                <!-- Expandable Details -->
+                <div id="details-{{ incident._id }}" class="hidden mt-4">
+                    <p class="dark:text-gray-400">Description: {{ incident.description }}</p>
+                    <div class="mt-2">
+                        <h4 class="text-sm font-medium dark:text-gray-300">Evidence Files:</h4>
+                        <div class="grid grid-cols-2 gap-4 mt-2">
+                            {% for file in incident.evidence_files %}
+                                {% if file.endswith('.jpg') or file.endswith('.jpeg') or file.endswith('.png') or file.endswith('.gif') %}
+                                <!-- Display Image -->
+                                <img src="{{ file }}" alt="Evidence" class="rounded-lg shadow-md">
+                                {% elif file.endswith('.mp4') or file.endswith('.webm') or file.endswith('.ogg') %}
+                                <!-- Display Video -->
+                                <video controls class="rounded-lg shadow-md">
+                                    <source src="{{ file }}" type="video/{{ file.split('.')[-1] }}">
+                                    Your browser does not support the video tag.
+                                </video>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        
                     </div>
-                    <p class="text-blue-600 dark:text-blue-400 mt-2">Location: Residential Area, Oak St to Pine St</p>
-                    <p class="text-blue-600 dark:text-blue-400">Distance: 1.8 miles away</p>
-                    <p class="text-blue-600 dark:text-blue-400 mt-2">Estimated restoration time: 2 hours. Utility company is working on the issue.</p>
                 </div>
             </div>
+            {% endfor %}
         </div>
     </main>
 
     <script>
+         // Toggle Details Visibility
+         function toggleDetails(id) {
+            const details = document.getElementById(`details-${id}`);
+            details.classList.toggle('hidden');
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('mainContent');

@@ -99,9 +99,13 @@ def citizen_index():
 def citizen_geofencing():
     return render_template("Citizen/geofencing.html")
 
-@app.route("/citizen/incident-alerts")
+@app.route("/citizen/incident-alerts", methods=["GET"])
 def citizen_incident_alerts():
-    return render_template("Citizen/incident-alerts.html")
+    incidents = list(collection.find())
+    print("Retrieved incidents:", incidents)
+    for incident in incidents:
+        incident["_id"] = str(incident["_id"])
+    return render_template("Citizen/incident-alerts.html", incidents=incidents)
 
 @app.route("/citizen/real-time-map")
 def citizen_real_time_map():
