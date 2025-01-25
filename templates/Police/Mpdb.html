@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Missing Persons List - Missing Person Detection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-stone-50">
+    <!-- Navigation -->
+    <nav class="bg-stone-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="text-xl font-bold">Missing Person Detection</div>
+                <div class="space-x-4">
+                    <a href="index.html" class="hover:text-stone-200">Home</a>
+                    <a href="dashboard.html" class="hover:text-stone-200">Dashboard</a>
+                    <a href="missing-persons.html" class="hover:text-stone-200">Missing Persons</a>
+                    <a href="community.html" class="hover:text-stone-200">Community</a>
+                    <a href="contact.html" class="hover:text-stone-200">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Search Section -->
+    <div class="bg-stone-500 text-white py-8">
+        <div class="container mx-auto px-4">
+            <h1 class="text-3xl font-bold mb-6">Missing Persons List</h1>
+            <div class="flex gap-4 mb-4">
+                <input type="text" placeholder="Search by name or case ID" 
+                    class="w-full p-2 rounded text-stone-800">
+                <button class="bg-white text-stone-500 px-6 py-2 rounded font-semibold hover:bg-stone-50">
+                    Search
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Missing Persons Grid -->
+    <div class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Missing Person Card -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse2.mm.bing.net%2Fth%3Fid%3DOIP.W1JpXWmgwwkB9HnzIMPCxAHaKd%26pid%3DApi&f=1&ipt=25c2196205f3a94a32b2bc3d6912fc5aa2f4f284a3eb34652cb609ff14f87e26&ipo=images" alt="Missing Person" 
+                    class="w-full h-60 object-contain">
+                <div class="p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h3 class="text-xl font-bold">Miku Nakano</h3>
+                            <p class="text-stone-600">Case ID: MP2024001</p>
+                        </div>
+                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">Missing</span>
+                    </div>
+                    <div class="space-y-2 mb-4">
+                        <p class="text-stone-600">Age: 25 years</p>
+                        <p class="text-stone-600">Last Seen: Central Park, NY</p>
+                        <p class="text-stone-600">Date: March 15, 2024</p>
+                    </div>
+                    <button class="w-full bg-stone-500 text-white py-2 rounded hover:bg-stone-600">
+                        Report Sighting
+                    </button>
+                </div>
+            </div>
+
+            <!-- Additional Missing Person Cards (examples) -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse4.mm.bing.net%2Fth%3Fid%3DOIP.IA9wsRMcXDux5OMPgv640AHaFA%26pid%3DApi&f=1&ipt=d4c25a0375a1cc19e40721f44882af3eb5e9ff16453ad48737980558992e18b2&ipo=images" alt="Missing Person" 
+                    class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h3 class="text-xl font-bold">Alexandra </h3>
+                            <p class="text-stone-600">Case ID: MP2024002</p>
+                        </div>
+                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">Missing</span>
+                    </div>
+                    <div class="space-y-2 mb-4">
+                        <p class="text-stone-600">Age: 30 years</p>
+                        <p class="text-stone-600">Last Seen: Times Square</p>
+                        <p class="text-stone-600">Date: March 17, 2024</p>
+                    </div>
+                    <button class="w-full bg-stone-500 text-white py-2 rounded hover:bg-stone-600">
+                        Report Sighting
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex justify-center mt-8 space-x-2">
+            <button class="px-4 py-2 border rounded hover:bg-stone-100">Previous</button>
+            <button class="px-4 py-2 bg-stone-500 text-white rounded">1</button>
+            <button class="px-4 py-2 border rounded hover:bg-stone-100">2</button>
+            <button class="px-4 py-2 border rounded hover:bg-stone-100">3</button>
+            <button class="px-4 py-2 border rounded hover:bg-stone-100">Next</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-stone-800 text-white py-8 mt-8">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2024 Missing Person Detection System. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

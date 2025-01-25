@@ -1,86 +1,87 @@
-from flask import Flask, Response, render_template
-from flask_socketio import SocketIO, emit
+from flask import Flask, Response, jsonify, render_template
 import cv2
 from ultralytics import YOLO
-import threading
-
+import datetime
+from pymongo import MongoClient
+from bson.objectid import ObjectId
 app = Flask(__name__)
-socketio = SocketIO(app)
 
 
- 
+
+client = MongoClient('mongodb://localhost:27017/')
+db = client['alert_database']
+collection = db['alerts']
 
 
-# Load both YOLO models
-violence_model = YOLO("viodec_mk1.pt")  # Replace with your violence detection model path
-arms_model = YOLO("arms_detect.pt")  # Replace with your arms detection model path
 
-# Define violence-related and arms-related classes
-violence_classes = ["Violence "]  # Adjust based on your model's labels
-arms_classes = ["Gun", "knife", "Pistol","handgun","rifle"]  # Adjust based on your model's labels
+# Load models
+violence_model = YOLO("viodec_mk1.pt")
+arms_model = YOLO("arms_detect.pt")
 
-# Initialize video capture
-cap = cv2.VideoCapture(0)
-if not cap.isOpened():
-    raise RuntimeError("Error: Unable to access the webcam.")
+violence_classes = ["Violence ","knife","guns","NonViolence"]  
+arms_classes = ["Gun", "Knife", "Pistol", "Handgun", "Rifle"]
 
+# Global variable to store detected objects
+detected_objects = []
 
-def detection_loop():
-    """Perform object detection using both models and stream video frames."""
-    try:
-        while True:
-            ret, frame = cap.read()
-            if not ret:
-                print("Error: Unable to read frame from webcam.")
-                break
+# Function to run inference on a frame
+def detect_objects(frame):
+    global detected_objects
+    violence_results = violence_model(frame)
+    arms_results = arms_model(frame)
 
-            # Run YOLOv8 inference for both models
-            violence_results = violence_model(frame)
-            arms_results = arms_model(frame)
+    detected_objects.clear()  # Clear previous detections
 
-            # Process violence detection results
-            for result in violence_results[0].boxes:
-                cls_id = int(result.cls[0])
-                label = violence_model.names[cls_id]
-                if label in violence_classes:
-                    # Emit violence alert
-                    socketio.emit('alert', {'message': f"Violence detected: {label}"}, broadcast=True)
+    # Check for violence
+    for result in violence_results:
+        for box in result.boxes:
+            class_id = int(box.cls)
+            if violence_classes[class_id] == "Violence":
+                detected_objects.append("Violence")
 
-            # Process arms detection results
-            for result in arms_results[0].boxes:
-                cls_id = int(result.cls[0])
-                label = arms_model.names[cls_id]
-                if label in arms_classes:
-                    # Emit arms alert
-                    socketio.emit('alert', {'message': f"Weapon detected: {label}"}, broadcast=True)
+    # Check for arms
+    for result in arms_results:
+        for box in result.boxes:
+            class_id = int(box.cls)
+            if arms_classes[class_id] in arms_classes:
+                detected_objects.append(arms_classes[class_id])
 
-            # Encode the frame as a JPEG
-            _, buffer = cv2.imencode('.jpg', frame)
-            frame_data = buffer.tobytes()
+    return detected_objects
 
-            # Yield the frame to the video stream
+# Function to generate frames from webcam
+def generate_frames():
+    global detected_objects
+    cap = cv2.VideoCapture(0)
+    while True:
+        success, frame = cap.read()
+        if not success:
+            break
+        else:
+            detected_objects = detect_objects(frame)
+            if detected_objects:
+                timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                print(f"Detected: {detected_objects} at {timestamp}")
+                # Save frame with timestamp
+                cv2.imwrite(f"detected_{timestamp}.jpg", frame)
+
+            ret, buffer = cv2.imencode('.jpg', frame)
+            frame = buffer.tobytes()
             yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame_data + b'\r\n')
-
-    except Exception as e:
-        print(f"An error occurred: {e}")
-    finally:
-        cap.release()
-
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 @app.route('/video_feed')
 def video_feed():
-    """Stream the video feed to the front end."""
-    return Response(
-        detection_loop(),
-        mimetype='multipart/x-mixed-replace; boundary=frame'
-    )
+    return Response(generate_frames(),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
 
+@app.route('/detections')
+def detections():
+    global detected_objects
+    return jsonify({"detected_objects": detected_objects})
 
-# Citizen Side Routes
-@app.route("/")
-def citizen_index():
-    return render_template("Citizen/index.html")
+@app.route('/')
+def index():
+    return render_template('/Police/Login.html')
 
 @app.route("/citizen/geofencing")
 def citizen_geofencing():
@@ -130,6 +131,37 @@ def police_analytics():
 @app.route("/police/sos-notifications")
 def police_sos_notifications():
     return render_template("Police/sos-notifications.html")
+
+
+@app.route("/Police/Missing_Person_Database")
+def Police_Missing_Person_Database():
+      return render_template("Police/Mpdb.html")
+
+@app.route("/Police/Broadcast_Alert")    
+def Police_Broadcast_Alert():
+    return render_template("Police/Broadcast_Alert.html")  
+
+@app.route('/submit_alert', methods=['POST'])
+def submit_alert():
+    # Get form data
+    alert_data = {
+        'alertType': request.form.get('alertType'),
+        'alertTitle': request.form.get('alertTitle'),
+        'alertMessage': request.form.get('alertMessage'),
+        'alertLocation': request.form.get('alertLocation'),
+        'alertDuration': int(request.form.get('alertDuration')),
+        'targetAudience': request.form.getlist('targetAudience')
+    }
+
+    # Insert data into MongoDB
+    result = collection.insert_one(alert_data)
+
+    # Return a response
+    return jsonify({
+        'status': 'success',
+        'message': 'Alert submitted successfully',
+        'inserted_id': str(result.inserted_id)
+    })
 
 if __name__ == "__main__":
     app.run(debug=True)

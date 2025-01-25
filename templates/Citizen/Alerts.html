@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citizen Alerts - Safety App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1e40af',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .notification {
+            animation: slideIn 0.5s ease-out;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-200">
+    <!-- Top Navigation -->
+    <nav class="bg-white dark:bg-gray-800 shadow-md fixed w-full top-0 z-50 transition-colors duration-200">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-bold dark:text-white">Citizen Safety App</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="darkModeToggle" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors duration-200">
+                        <i class="fas fa-moon dark:text-white"></i>
+                    </button>
+                    <button class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors duration-200">
+                        <i class="fas fa-user-circle dark:text-white"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 mt-20">
+        <h2 class="text-2xl font-bold mb-4 dark:text-white">Active Alerts</h2>
+        <div id="alertsContainer" class="space-y-4">
+            <!-- Alerts will be dynamically added here -->
+        </div>
+    </main>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer" class="fixed top-4 right-4 z-50 space-y-4"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const alertsContainer = document.getElementById('alertsContainer');
+            const notificationContainer = document.getElementById('notificationContainer');
+
+            // Dark mode toggle
+            darkModeToggle.addEventListener('click', function() {
+                document.documentElement.classList.toggle('dark');
+                const isDarkMode = document.documentElement.classList.contains('dark');
+                localStorage.setItem('darkMode', isDarkMode);
+                darkModeToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            });
+
+            // Check for saved dark mode preference
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.documentElement.classList.add('dark');
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+
+            // Function to add an alert
+            function addAlert(alert) {
+                const alertElement = document.createElement('div');
+                alertElement.className = `bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 ${getAlertColorClass(alert.type)}`;
+                alertElement.innerHTML = `
+                    <h3 class="text-lg font-semibold mb-2">${alert.title}</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-2">${alert.message}</p>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                        <span class="font-medium">Location:</span> ${alert.location} |
+                        <span class="font-medium">Duration:</span> ${alert.duration} hours |
+                        <span class="font-medium">Type:</span> ${alert.type}
+                    </div>
+                `;
+                alertsContainer.prepend(alertElement);
+            }
+
+            // Function to show a notification
+            function showNotification(alert) {
+                const notification = document.createElement('div');
+                notification.className = `notification bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 ${getAlertColorClass(alert.type)}`;
+                notification.innerHTML = `
+                    <h4 class="font-semibold">${alert.title}</h4>
+                    <p class="text-sm">${alert.message}</p>
+                `;
+                notificationContainer.appendChild(notification);
+
+                // Remove notification after 5 seconds
+                setTimeout(() => {
+                    notification.remove();
+                }, 5000);
+            }
+
+            function getAlertColorClass(type) {
+                switch (type.toLowerCase()) {
+                    case 'emergency':
+                        return 'border-l-4 border-red-500';
+                    case 'warning':
+                        return 'border-l-4 border-yellow-500';
+                    case 'information':
+                        return 'border-l-4 border-blue-500';
+                    default:
+                        return '';
+                }
+            }
+
+            // Simulate receiving alerts
+            const sampleAlerts = [
+                {
+                    type: 'Emergency',
+                    title: 'Flash Flood Warning',
+                    message: 'A flash flood warning has been issued for the downtown area. Please seek higher ground immediately.',
+                    location: 'Downtown',
+                    duration: 6
+                },
+                {
+                    type: 'Warning',
+                    title: 'Road Closure',
+                    message: 'Main Street will be closed for construction from 7 AM to 7 PM tomorrow. Please use alternate routes.',
+                    location: 'Main Street',
+                    duration: 12
+                },
+                {
+                    type: 'Information',
+                    title: 'Community Meeting',
+                    message: 'A community safety meeting will be held at the City Hall on Friday at 6 PM. All residents are encouraged to attend.',
+                    location: 'City Hall',
+                    duration: 2
+                }
+            ];
+
+            // Add initial alerts
+            sampleAlerts.forEach(alert => addAlert(alert));
+
+            // Simulate receiving new alerts
+            setInterval(() => {
+                if (Math.random() < 0.3) { // 30% chance of new alert every 30 seconds
+                    const newAlert = {
+                        type: ['Emergency', 'Warning', 'Information'][Math.floor(Math.random() * 3)],
+                        title: 'New Alert',
+                        message: 'This is a simulated new alert for demonstration purposes.',
+                        location: 'Various Locations',
+                        duration: Math.floor(Math.random() * 12) + 1
+                    };
+                    addAlert(newAlert);
+                    showNotification(newAlert);
+                }
+            }, 30000);
+        });
+    </script>
+</body>
+</html>
+

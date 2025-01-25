@@ -200,7 +200,7 @@ input:focus {
       </div>
 
       <!-- Forms -->
-      <form id="loginForm" class="login-form">
+      <form id="loginForm"  class="login-form">
         <h2 id="formTitle">Police Login</h2>
 
         <div class="input-group">
@@ -210,7 +210,7 @@ input:focus {
             id="username" 
             name="username" 
             placeholder="Police ID" 
-            required
+          
           >
         </div>
 
@@ -221,7 +221,7 @@ input:focus {
             id="password" 
             name="password" 
             placeholder="Password" 
-            required
+           
           >
         </div>
 
@@ -283,6 +283,8 @@ input:focus {
     const formData = new FormData(loginForm);
     const data = Object.fromEntries(formData.entries());
     console.log('Form submitted:', data);
+    window.location.replace("http://localhost:5000/police/cctv-feeds");
+    
     // Add your login logic here
   });
 });
