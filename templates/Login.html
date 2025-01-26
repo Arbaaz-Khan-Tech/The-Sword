@@ -200,7 +200,7 @@ input:focus {
       </div>
 
       <!-- Forms -->
-      <form id="loginForm" class="login-form">
+      <form id="loginForm" method="POST" action="/login">
         <h2 id="formTitle">Police Login</h2>
 
         <div class="input-group">
@@ -225,6 +225,9 @@ input:focus {
           >
         </div>
 
+        <!-- Hidden input to determine role -->
+        <input type="hidden" id="role" name="role" value="police">
+
         <button type="submit" class="submit-btn">Sign In</button>
 
         <div class="forgot-password">
@@ -243,6 +246,7 @@ input:focus {
   const loginForm = document.getElementById('loginForm');
   const formTitle = document.getElementById('formTitle');
   const usernameInput = document.getElementById('username');
+  const roleInput = document.getElementById('role');
   const body = document.body;
 
   // Tab switching logic
@@ -266,10 +270,12 @@ input:focus {
         body.classList.remove('citizen');
         formTitle.textContent = 'Police Login';
         usernameInput.placeholder = 'Police ID';
+        roleInput.value = 'police';
       } else {
         body.classList.add('citizen');
         formTitle.textContent = 'Citizen Login';
         usernameInput.placeholder = 'Username';
+        roleInput.value = 'citizen';
       }
 
       // Clear form

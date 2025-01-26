@@ -1,297 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CCTV Feeds - Police Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#1e40af',
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        .sidebar {
-            transition: width 0.3s ease;
-        }
-        .sidebar.collapsed {
-            width: 64px;
-        }
-        .sidebar.expanded {
-            width: 250px;
-        }
-        .menu-text {
-            transition: opacity 0.3s ease;
-        }
-        .sidebar.collapsed .menu-text {
-            opacity: 0;
-            display: none;
-        }
-        .feed-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        .feed-overlay.active {
-            display: flex;
-        }
-        .feed-overlay img {
-            max-width: 90%;
-            max-height: 90%;
-            object-fit: contain;
-        }
-    </style>
-</head>
-<body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-200">
-    <!-- Top Navigation -->
-    <nav class="bg-white dark:bg-gray-800 shadow-md fixed w-full top-0 z-50 transition-colors duration-200">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center">
-                    <button id="sidebarToggle" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full mr-2 transition-colors duration-200">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <h1 class="text-xl font-bold dark:text-white">Police Dashboard</h1>
-                </div>
-                <div class="flex-1 max-w-2xl mx-4">
-                    <input type="text" placeholder="Search..." 
-                           class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary dark:bg-gray-700 dark:text-white dark:border-gray-600 transition-colors duration-200">
-                </div>
-                <div class="flex items-center space-x-4">
-                    <button id="darkModeToggle" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors duration-200">
-                        <i class="fas fa-moon dark:text-white"></i>
-                    </button>
-                    <button class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors duration-200">
-                        <i class="fas fa-user-circle dark:text-white"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </nav>
+{% extends "Pbase.html" %}
 
-    <!-- Sidebar -->
-    <div id="sidebar" class="sidebar expanded fixed left-0 top-16 h-screen bg-white dark:bg-gray-800 shadow-lg z-40 transition-colors duration-200">
-        <div class="py-4">
-            <a href="cctv-feeds.html" class="flex items-center px-4 py-3 text-primary hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
-                <i class="fas fa-video w-6"></i>
-                <span class="menu-text ml-2 font-medium">Real-Time CCTV Feeds</span>
-            </a>
-            <a href="crime-heatmap.html" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
-                <i class="fas fa-map-marked-alt w-6"></i>
-                <span class="menu-text ml-2">Crime Heatmap</span>
-            </a>
-            <a href="sos-notifications.html" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
-                <i class="fas fa-exclamation-circle w-6"></i>
-                <span class="menu-text ml-2">SOS Notifications</span>
-            </a>
-            <a href="incident-alerts.html" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
-                <i class="fas fa-bell w-6"></i>
-                <span class="menu-text ml-2">Incident Alerts</span>
-            </a>
-            <a href="offender-database.html" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
-                <i class="fas fa-database w-6"></i>
-                <span class="menu-text ml-2">Offender Database</span>
-            </a>
-            <a href="incident-report.html" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
-                <i class="fas fa-file-alt w-6"></i>
-                <span class="menu-text ml-2">Incident Report</span>
-            </a>
+{% block title %}CCTV Feeds - Police Dashboard{% endblock %}
+
+{% block content %}
+    <h2 class="text-2xl font-bold mb-4 dark:text-white">Real-Time CCTV Feeds</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- CCTV Feed 1 -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+            <div class="relative">
+                <img id="webcam-feed" src="/video_feed" alt="CCTV Feed 1" class="w-full h-48 object-cover rounded-lg cursor-pointer feed-image" data-feed="1">
+                <span class="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs">Normal</span>
+            </div>
+            <h3 class="text-lg font-semibold mt-2 dark:text-white">Camera #1 - Main Street</h3>
+            <p class="text-gray-600 dark:text-gray-300 text-sm">Real-time status updates below:</p>
+            <div id="alert" style="color: red; font-weight: bold; margin-top: 20px;"></div>
+        </div>
+
+        <!-- CCTV Feed 2 -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+            <div class="relative">
+                <img src="https://placehold.co/400x300" alt="CCTV Feed 2" class="w-full h-48 object-cover rounded-lg cursor-pointer feed-image" data-feed="2">
+                <span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs">Anomaly Detected</span>
+            </div>
+            <h3 class="text-lg font-semibold mt-2 dark:text-white">Camera #2 - Central Park</h3>
+            <p class="text-gray-600 dark:text-gray-300 text-sm">Last updated: 1 minute ago</p>
+        </div>
+
+        <!-- CCTV Feed 3 -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+            <div class="relative">
+                <img src="https://placehold.co/400x300" alt="CCTV Feed 3" class="w-full h-48 object-cover rounded-lg cursor-pointer feed-image" data-feed="3">
+                <span class="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs">Normal</span>
+            </div>
+            <h3 class="text-lg font-semibold mt-2 dark:text-white">Camera #3 - Downtown</h3>
+            <p class="text-gray-600 dark:text-gray-300 text-sm">Last updated: 3 minutes ago</p>
+        </div>
+
+        <!-- CCTV Feed 4 -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+            <div class="relative">
+                <img src="https://placehold.co/400x300" alt="CCTV Feed 4" class="w-full h-48 object-cover rounded-lg cursor-pointer feed-image" data-feed="4">
+                <span class="absolute top-2 left-2 bg-yellow-500 text-white px-2 py-1 rounded-full text-xs">Warning</span>
+            </div>
+            <h3 class="text-lg font-semibold mt-2 dark:text-white">Camera #4 - Shopping District</h3>
+            <p class="text-gray-600 dark:text-gray-300 text-sm">Last updated: 30 seconds ago</p>
         </div>
     </div>
-
-    <!-- Main Content -->
-    <main class="transition-all duration-300" id="mainContent">
-        <div class="container mx-auto px-4 mt-20">
-            <h2 class="text-2xl font-bold mb-4 dark:text-white">Real-Time CCTV Feeds</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- CCTV Feed 1 -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
-                    <div class="relative">
-                        <img id="webcam-feed" src="/video_feed" alt="CCTV Feed 1" class="w-full h-48 object-cover rounded-lg cursor-pointer feed-image" data-feed="1">
-                        <span class="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs">Normal</span>
-                    </div>
-                     <h3 class="text-lg font-semibold mt-2 dark:text-white">Camera #1 - Main Street</h3>
-                    <p class="text-gray-600 dark:text-gray-300 text-sm">Real-time status updates below:</p>
-                    <div id="alert" style="color: red; font-weight: bold; margin-top: 20px;"></div>
-
-                </div>
-
-                <!-- CCTV Feed 2 -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
-                    <div class="relative">
-                        <img src="https://placehold.co/400x300" alt="CCTV Feed 2" class="w-full h-48 object-cover rounded-lg cursor-pointer feed-image" data-feed="2">
-                        <span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs">Anomaly Detected</span>
-                    </div>
-                    <h3 class="text-lg font-semibold mt-2 dark:text-white">Camera #2 - Central Park</h3>
-                    <p class="text-gray-600 dark:text-gray-300 text-sm">Last updated: 1 minute ago</p>
-                </div>
-
-                <!-- CCTV Feed 3 -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
-                    <div class="relative">
-                        <img src="https://placehold.co/400x300" alt="CCTV Feed 3" class="w-full h-48 object-cover rounded-lg cursor-pointer feed-image" data-feed="3">
-                        <span class="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs">Normal</span>
-                    </div>
-                    <h3 class="text-lg font-semibold mt-2 dark:text-white">Camera #3 - Downtown</h3>
-                    <p class="text-gray-600 dark:text-gray-300 text-sm">Last updated: 3 minutes ago</p>
-                </div>
-
-                <!-- CCTV Feed 4 -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
-                    <div class="relative">
-                        <img src="https://placehold.co/400x300" alt="CCTV Feed 4" class="w-full h-48 object-cover rounded-lg cursor-pointer feed-image" data-feed="4">
-                        <span class="absolute top-2 left-2 bg-yellow-500 text-white px-2 py-1 rounded-full text-xs">Warning</span>
-                    </div>
-                    <h3 class="text-lg font-semibold mt-2 dark:text-white">Camera #4 - Shopping District</h3>
-                    <p class="text-gray-600 dark:text-gray-300 text-sm">Last updated: 30 seconds ago</p>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Feed Overlay -->
-    <div id="feedOverlay" class="feed-overlay">
-        <img id="enlargedFeed" src="/placeholder.svg" alt="Enlarged CCTV Feed">
-    </div>
-
-    <!-- Bottom Notifications Bar -->
-    <div class="fixed bottom-0 left-0 right-0 bg-gray-200 dark:bg-gray-700 p-2 transition-colors duration-200">
-        <div class="container mx-auto">
-            <div class="overflow-hidden h-6">
-                <div class="animate-marquee whitespace-nowrap">
-                    <span class="text-gray-800 dark:text-gray-200 mx-4">SOS: Robbery in progress at 123 Main St</span>
-                    <span class="text-gray-800 dark:text-gray-200 mx-4">Incident: Traffic accident reported on Highway 101</span>
-                    <span class="text-gray-800 dark:text-gray-200 mx-4">Alert: Suspicious activity detected in CCTV feed #7</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('mainContent');
-            const sidebarToggle = document.getElementById('sidebarToggle');
-            const darkModeToggle = document.getElementById('darkModeToggle');
-            const feedOverlay = document.getElementById('feedOverlay');
-            const enlargedFeed = document.getElementById('enlargedFeed');
-            const feedImages = document.querySelectorAll('.feed-image');
-            
-            function updateMainContentMargin() {
-                if (sidebar.classList.contains('collapsed')) {
-                    mainContent.style.marginLeft = '64px';
-                } else {
-                    mainContent.style.marginLeft = '250px';
-                }
-            }
-
-            // Initial margin
-            updateMainContentMargin();
-
-            sidebarToggle.addEventListener('click', function() {
-                sidebar.classList.toggle('collapsed');
-                sidebar.classList.toggle('expanded');
-                updateMainContentMargin();
-            });
-
-            // Dark mode toggle
-            darkModeToggle.addEventListener('click', function() {
-                document.documentElement.classList.toggle('dark');
-                const isDarkMode = document.documentElement.classList.contains('dark');
-                localStorage.setItem('darkMode', isDarkMode);
-                darkModeToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-            });
-
-            // Check for saved dark mode preference
-            if (localStorage.getItem('darkMode') === 'true') {
-                document.documentElement.classList.add('dark');
-                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-            }
-
-            // CCTV feed enlargement
-            feedImages.forEach(img => {
-                img.addEventListener('click', function() {
-                    enlargedFeed.src = this.src;
-                    feedOverlay.classList.add('active');
-                });
-            });
-
-            feedOverlay.addEventListener('click', function() {
-                this.classList.remove('active');
-            });
-        });
-    </script>
-
-    <script>
-
-
-        const socket = io();
-
-        // Listen for violence status updates
-        socket.on('violence_status', (data) => {
-            const statusBadge = document.getElementById('status-badge');
-            const statusText = document.getElementById('status-text');
-
-            if (data.status === "Alert: Violence Detected!") {
-                statusBadge.classList.remove('bg-green-500');
-                statusBadge.classList.add('bg-red-500');
-                statusBadge.innerText = 'Alert';
-                statusText.innerText = data.status;
-            } else {
-                statusBadge.classList.remove('bg-red-500');
-                statusBadge.classList.add('bg-green-500');
-                statusBadge.innerText = 'Normal';
-                statusText.innerText = data.status;
-            }
-        });
- 
-        </script>
-
-<script>
-   
-
-    // Listen for alerts from the backend
-    socket.on('alert', (data) => {
-        const alertDiv = document.getElementById('alert');
-        alertDiv.textContent = data.message;
-
-        // Clear alert after 5 seconds
-        setTimeout(() => {
-            alertDiv.textContent = '';
-        }, 5000);
-    });
-</script>
-
-<script>
-async function sendFrame(imageBlob) {
-    const response = await fetch("https://violence-detect.loca.lt/detect", {
-        method: "POST",
-        body: imageBlob,
-        headers: {
-            "Content-Type": "multipart/form-data",
-        },
-    });
-    const data = await response.json();
-    console.log(data); // Display detected objects
-    return data;
-}
-</script>
-
-</body>
-</html>
+{% endblock %}

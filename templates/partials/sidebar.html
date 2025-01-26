@@ -1,0 +1,12 @@
+<aside class="sidebar">
+    <ul class="sidebar-menu">
+        <li><a href="/dashboard">Dashboard</a></li>
+        {% if role == "Citizen" %}
+        <li><a href="/report-issue">Report Issue</a></li>
+        <li><a href="/track-issues">Track Issues</a></li>
+        {% elif role == "Police" %}
+        <li><a href="/verify-issues">Verify Issues</a></li>
+        <li><a href="/resolved-issues">Resolved Issues</a></li>
+        {% endif %}
+    </ul>
+</aside>

@@ -1,0 +1,27 @@
+<nav class="navbar">
+    <ul class="navbar-links">
+        <!-- Common Links for All Roles -->
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/contact">Contact</a></li>
+        
+        <!-- Conditional Links for Citizens -->
+        {% if role == "Citizen" %}
+        <li><a href="/citizen/geofencing">Geofencing</a></li>
+        <li><a href="/citizen/incident-alerts">Incident Alerts</a></li>
+        <li><a href="/citizen/real-time-map">Real-Time Map</a></li>
+        <li><a href="/citizen/sos">SOS</a></li>
+
+        <!-- Conditional Links for Police -->
+        {% elif role == "Police" %}
+        <li><a href="/police/cctv-feeds">CCTV Feeds</a></li>
+        <li><a href="/police/crime-heatmap">Crime Heatmap</a></li>
+        <li><a href="/police/offender-database">Offender Database</a></li>
+        <li><a href="/police/police-analytics">Analytics</a></li>
+        <li><a href="/police/sos-notification">SOS Notifications</a></li>
+        {% endif %}
+
+        <!-- Logout -->
+        <li><a href="/logout">Logout</a></li>
+    </ul>
+</nav>

@@ -1,14 +1,19 @@
-from flask import Flask, Response, render_template
+from flask import Flask, Response, render_template, redirect, request, url_for, session
 from flask_socketio import SocketIO, emit
 import cv2
 from ultralytics import YOLO
+from routes.citizen import citizen_bp
+from routes.police import police_bp
+
 import threading
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'your_secret_key'
 socketio = SocketIO(app)
 
-
- 
+ # Register blueprints
+app.register_blueprint(citizen_bp, url_prefix="/citizen")
+app.register_blueprint(police_bp, url_prefix="/police")
 
 
 # Load both YOLO models
@@ -76,10 +81,48 @@ def video_feed():
         mimetype='multipart/x-mixed-replace; boundary=frame'
     )
 
+@app.route("/")
+def login_page():
+    """Render the login page."""
+    return render_template("login.html")
+
+
+@app.route("/login", methods=["POST"])
+def login():
+    """Handle login logic."""
+    role = request.form.get("role")  # Get role (police or citizen) from the form
+    username = request.form.get("username")  # Retrieve the username
+    password = request.form.get("password")  # Retrieve the password
+
+    # Replace the following with actual authentication logic
+    if role == "police" and username == "police123" and password == "securepassword":
+        session["role"] = "police"
+        session["username"] = username
+        return redirect(url_for("police_index"))  # Redirect to police dashboard
+    else:
+        # Invalid credentials, redirect back to login page
+        flash("Invalid Police ID or Password. Please try again.", "error")
+        return redirect(url_for("login_page"))
+
+    
+@app.route("/base")
+def home():
+    return render_template("base.html")
+
+@app.route('/open-base')
+def open_pbase():
+    return render_template('Pbase.html')  # Rendering Pbase.html directly
+
+
+
 
 # Citizen Side Routes
-@app.route("/")
+
+
+
+@app.route("/citizen")
 def citizen_index():
+    """Render Citizen index page."""
     return render_template("Citizen/index.html")
 
 @app.route("/citizen/geofencing")
@@ -101,7 +144,9 @@ def citizen_sos():
 # Police Side Routes
 @app.route("/police")
 def police_index():
+    """Render Police index page."""
     return render_template("Police/index.html")
+
 
 @app.route("/police/cctv-feeds")
 def police_cctv_feeds():
@@ -114,10 +159,6 @@ def police_crime_heatmap():
 @app.route("/police/incident-report")
 def police_incident_report():
     return render_template("Police/incident-report.html")
-
-@app.route("/police/login")
-def police_login():
-    return render_template("Police/Login.html")
 
 @app.route("/police/offender-database")
 def police_offender_database():
