@@ -26,5 +26,11 @@ ENV/
 .DS_Store
 Thumbs.db
 
+
+
+config.json
+PyWhatKit_DB.txt
+
+
 # Flask configuration file (optional)
 config.py
