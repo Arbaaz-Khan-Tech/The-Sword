@@ -105,6 +105,7 @@ client=MongoClient(mongo_con)
 db=client["SurakshaSetu"]
 collection=db["Incidents"]
 Alert_Collection = db["Alerts"]
+Markers_Collection = db["Markers"]
 
 
 
@@ -277,6 +278,10 @@ def Police_Missing_Person_Database():
 def Police_Broadcast_Alert():
     return render_template("Police/Broadcast_Alert.html")  
 
+
+
+    
+
 @app.route('/submit_alert', methods=['POST'])
 def submit_alert():
     try:
@@ -323,6 +328,30 @@ def submit_alert():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
+
+
+@app.route('/api/markers', methods=['POST'])
+def save_marker():
+    data = request.get_json()
+    lat = data.get('lat')
+    lng = data.get('lng')
+    title = data.get('title')
+    priority = data.get('priority')
+
+    if not lat or not lng or not title or not priority:
+        return jsonify({'error': 'Latitude, longitude, title, and priority are required'}), 400
+
+    # Insert marker into MongoDB
+    marker = {'lat': lat, 'lng': lng, 'title': title, 'priority': priority}
+    markers_collection.insert_one(marker)
+
+    return jsonify(marker), 201
+
+# API to fetch all markers
+@app.route('/api/markers', methods=['GET'])
+def get_markers():
+    markers = list(markers_collection.find({}, {'_id': 0}))  # Exclude MongoDB _id field
+    return jsonify(markers), 200
 
 
 if __name__ == "__main__":
