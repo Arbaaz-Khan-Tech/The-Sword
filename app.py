@@ -9,15 +9,28 @@ from pymongo import MongoClient
 import json
 import os
 from bson import ObjectId
+import logging
+from flask_socketio import SocketIO
+import pywhatkit as kit
+
+from datetime import datetime, timedelta
+import json
+
+# Load data from JSON file
+with open('config.json', 'r') as file:
+    config = json.load(file)
+
+# Access the phone number
+phone_number = config.get('phone_number')
 
 
-import datetime
 
 app = Flask(__name__)
+socketio = SocketIO(app)
 
 
-
-
+# Set the logging level to ERROR
+app.logger.setLevel(logging.ERROR)
 
 
 # Load models
@@ -91,17 +104,33 @@ mongo_con="mongodb://localhost:27017"
 client=MongoClient(mongo_con)
 db=client["SurakshaSetu"]
 collection=db["Incidents"]
+Alert_Collection = db["Alerts"]
 
 
 
 @app.route('/')
 def index():
-    return render_template('/Police/Login.html')
+    return render_template('/Police/index.html')
 
 
 @app.route("/citizen/geofencing")
 def citizen_geofencing():
     return render_template("Citizen/geofencing.html")
+
+@app.route("/Citizen/alerts") 
+def citizen_alerts():
+    return render_template("/Citizen/Alerts.html")
+
+@app.route('/citizen/alerts/data', methods=['GET'])
+def fetch_citizen_alerts():
+    try:
+        alerts = list(Alert_Collection.find().sort('_id', -1))
+        for alert in alerts:
+            alert['_id'] = str(alert['_id'])  # Convert ObjectId to string
+        return jsonify({'status': 'success', 'alerts': alerts})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+    
 
 @app.route("/citizen/incident-alerts", methods=["GET"])
 def citizen_incident_alerts():
@@ -250,25 +279,50 @@ def Police_Broadcast_Alert():
 
 @app.route('/submit_alert', methods=['POST'])
 def submit_alert():
-    # Get form data
-    alert_data = {
-        'alertType': request.form.get('alertType'),
-        'alertTitle': request.form.get('alertTitle'),
-        'alertMessage': request.form.get('alertMessage'),
-        'alertLocation': request.form.get('alertLocation'),
-        'alertDuration': int(request.form.get('alertDuration')),
-        'targetAudience': request.form.getlist('targetAudience')
-    }
+    try:
+        # Get form data
+        alert_data = {
+            'alertType': request.form.get('alertType'),
+            'alertTitle': request.form.get('alertTitle'),
+            'alertMessage': request.form.get('alertMessage'),
+            'alertLocation': request.form.get('alertLocation'),
+            'alertDuration': int(request.form.get('alertDuration') or 0),
+            'targetAudience': request.form.getlist('targetAudience')
+        }
 
-    # Insert data into MongoDB
-    result = collection.insert_one(alert_data)
+        # Insert into MongoDB
+        result = Alert_Collection.insert_one(alert_data)
+        alert_data['_id'] = str(result.inserted_id)
 
-    # Return a response
-    return jsonify({
-        'status': 'success',
-        'message': 'Alert submitted successfully',
-        'inserted_id': str(result.inserted_id)
-    })
+        # Broadcast the new alert to connected clients (if using Socket.IO)
+        # socketio.emit('new_alert', alert_data)
+
+        # Send WhatsApp message
+        whatsapp_message = (
+            f"🚨 New Alert 🚨\n"
+            f"Type: {alert_data['alertType']}\n"
+            f"Title: {alert_data['alertTitle']}\n"
+            f"Message: {alert_data['alertMessage']}\n"
+            f"Location: {alert_data['alertLocation']}\n"
+            f"Duration: {alert_data['alertDuration']} hours\n"
+            f"Target Audience: {', '.join(alert_data['targetAudience'])}"
+        )
+
+   
+        
+        # Schedule the message to be sent in 1 minute
+        now = datetime.now()
+        send_time = now + timedelta(minutes=1)
+        kit.sendwhatmsg(phone_number, whatsapp_message, send_time.hour, send_time.minute)
+
+        return jsonify({
+            'status': 'success',
+            'message': 'Alert submitted and WhatsApp message scheduled successfully',
+            'inserted_id': str(result.inserted_id)
+        })
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
 
 
 if __name__ == "__main__":

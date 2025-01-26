@@ -6,6 +6,7 @@
     <title>Broadcast Alerts - Police Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script> 
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -160,8 +161,10 @@
                 <!-- Recent Alerts -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                     <h3 class="text-xl font-semibold mb-4 dark:text-white">Recent Alerts</h3>
-                    <div class="space-y-4" id="recentAlerts">
+                    <div class="space-y-4 bg-gray-100 dark:bg-gray-700 p-4 rounded-lg mb-4 " id="alertList">
                         <!-- Alert items will be dynamically added here -->
+                    
+                         
                     </div>
                 </div>
             </div>
@@ -220,67 +223,47 @@
                 document.documentElement.classList.add('dark');
                 darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
             }
-
-            // Handle form submission
-            alertForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const formData = new FormData(alertForm);
-                const alertData = Object.fromEntries(formData.entries());
-                alertData.targetAudience = formData.getAll('targetAudience');
-                
-                // Add the new alert to the recent alerts section
-                addRecentAlert(alertData);
-                
-                // Clear the form
-                alertForm.reset();
-                
-                // In a real application, you would send this data to a server
-                console.log('Alert data:', alertData);
-                alert('Alert broadcasted successfully!');
-            });
-
-            function addRecentAlert(alertData) {
-                const alertElement = document.createElement('div');
-                alertElement.className = 'bg-gray-100 dark:bg-gray-700 p-4 rounded-lg mb-4';
-                alertElement.innerHTML = `
-                    <h4 class="font-semibold text-gray-800 dark:text-white">${alertData.alertTitle}</h4>
-                    <p class="text-sm text-gray-600 dark:text-gray-300">${alertData.alertMessage}</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                        <span class="font-medium">Type:</span> ${alertData.alertType} |
-                        <span class="font-medium">Location:</span> ${alertData.alertLocation} |
-                        <span class="font-medium">Duration:</span> ${alertData.alertDuration} hours
-                    </p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">
-                        <span class="font-medium">Target Audience:</span> ${alertData.targetAudience.join(', ')}
-                    </p>
-                `;
-                recentAlerts.prepend(alertElement);
-
-                // Limit the number of recent alerts shown (e.g., to 5)
-                while (recentAlerts.children.length > 5) {
-                    recentAlerts.removeChild(recentAlerts.lastChild);
-                }
-            }
-
-            // Add some sample recent alerts
-            addRecentAlert({
-                alertType: 'emergency',
-                alertTitle: 'Flash Flood Warning',
-                alertMessage: 'A flash flood warning has been issued for the downtown area. Please seek higher ground immediately.',
-                alertLocation: 'Downtown',
-                alertDuration: '6',
-                targetAudience: ['Residents', 'Businesses', 'Visitors']
-            });
-
-            addRecentAlert({
-                alertType: 'warning',
-                alertTitle: 'Road Closure',
-                alertMessage: 'Main Street will be closed for construction from 7 AM to 7 PM tomorrow. Please use alternate routes.',
-                alertLocation: 'Main Street',
-                alertDuration: '12',
-                targetAudience: ['Residents', 'Businesses']
-            });
         });
+
+
+
+
+
+
+
+
+        const socket = io();
+
+        // Listen for new alerts
+        socket.on('new_alert', (alert) => {
+            console.log('New alert received:', alert);
+            addAlertToPage(alert);
+        });
+
+        // Function to add an alert to the page
+        function addAlertToPage(alert) {
+            const alertList = document.getElementById('alertList');
+            const alertCard = document.createElement('div');
+            alertCard.className = 'alert-card';
+
+            alertCard.innerHTML = `
+            
+                            <h4 class="font-semibold text-gray-800 dark:text-white">${alertData.alertTitle}</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">${alertData.alertMessage}</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                                <span class="font-medium">Type:</span> ${alertData.alertType} |
+                                <span class="font-medium">Location:</span> ${alertData.alertLocation} |
+                                <span class="font-medium">Duration:</span> ${alertData.alertDuration} hours
+                            </p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                <span class="font-medium">Target Audience:</span> ${alertData.targetAudience.join(', ')}
+                            </p>
+            `;
+
+            alertList.prepend(alertCard); // Add the new alert at the top
+        }
+
+        
     </script>
 </body>
 </html>
