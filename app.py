@@ -1,16 +1,22 @@
-from flask import Flask, Response, jsonify, render_template
+
+from flask import Flask, Response, render_template, redirect, url_for
+from flask_socketio import SocketIO, emit
 import cv2
 from ultralytics import YOLO
-import datetime
+import threading
+from flask import Flask, jsonify, request
 from pymongo import MongoClient
-from bson.objectid import ObjectId
+import json
+import os
+from bson import ObjectId
+
+
+import datetime
+
 app = Flask(__name__)
 
 
 
-client = MongoClient('mongodb://localhost:27017/')
-db = client['alert_database']
-collection = db['alerts']
 
 
 
@@ -79,17 +85,31 @@ def detections():
     global detected_objects
     return jsonify({"detected_objects": detected_objects})
 
+
+#created a connection to MongoDB
+mongo_con="mongodb://localhost:27017"
+client=MongoClient(mongo_con)
+db=client["SurakshaSetu"]
+collection=db["Incidents"]
+
+
+
 @app.route('/')
 def index():
     return render_template('/Police/Login.html')
+
 
 @app.route("/citizen/geofencing")
 def citizen_geofencing():
     return render_template("Citizen/geofencing.html")
 
-@app.route("/citizen/incident-alerts")
+@app.route("/citizen/incident-alerts", methods=["GET"])
 def citizen_incident_alerts():
-    return render_template("Citizen/incident-alerts.html")
+    incidents = list(collection.find())
+    print("Retrieved incidents:", incidents)
+    for incident in incidents:
+        incident["_id"] = str(incident["_id"])
+    return render_template("Citizen/incident-alerts.html", incidents=incidents)
 
 @app.route("/citizen/real-time-map")
 def citizen_real_time_map():
@@ -111,10 +131,97 @@ def police_cctv_feeds():
 @app.route("/police/crime-heatmap")
 def police_crime_heatmap():
     return render_template("Police/crime-heatmap.html")
+    
 
-@app.route("/police/incident-report")
+@app.route("/police/incident-alerts", methods=["GET"])
+def police_incident_alerts():
+    # Fetch all incidents from the database
+    incidents = list(collection.find())
+    # Convert MongoDB ObjectId to string for JSON serialization
+    for incident in incidents:
+        incident["_id"] = str(incident["_id"])
+    return render_template("Police/incident-alerts.html", incidents=incidents)
+
+# Route to update incident status
+@app.route("/police/update-incident-status/<incident_id>", methods=["POST"])
+def update_incident_status(incident_id):
+    try:
+        new_status = request.json.get("status")
+        # Update the status_type in the database
+        result = collection.update_one(
+            {"_id": ObjectId(incident_id)}, {"$set": {"status_type": new_status}}
+        )
+        if result.modified_count > 0:
+            return jsonify({"message": "Status updated successfully!"}), 200
+        else:
+            return jsonify({"error": "Incident not found or no changes made"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+
+
+@app.route("/police/incident-report", methods=["GET", "POST"])
 def police_incident_report():
+    if request.method == "POST":
+        try:
+            # Log form and file data
+            print("Form data received:", request.form)
+            print("Files received:", request.files)
+
+            # Extract data
+            incident_type = request.form.get("incidentType")
+            date_time = request.form.get("dateTime")
+            location = request.form.get("location")
+            reporting_officer = request.form.get("reportingOfficer")
+            status_type = request.form.get("statusType")
+            priority_type = request.form.get("priorityType")
+            notice = request.form.get("notice")
+            description = request.form.get("description")
+
+            # Handle file uploads
+            evidence_files = request.files.getlist("evidence")
+            evidence_file_paths = []
+            evidence_dir = "static/uploads/evidence"  # Save in static directory
+            os.makedirs(evidence_dir, exist_ok=True)
+
+            for evidence in evidence_files:
+                if evidence.filename != "":
+                    file_path = os.path.join(evidence_dir, evidence.filename)
+                    evidence.save(file_path)
+                    # Save public URL for the file
+                    evidence_file_paths.append(f"/static/uploads/evidence/{evidence.filename}")
+                    print(f"Saved file: {file_path}")
+
+            # Create the document to insert into MongoDB
+            incident_data = {
+                "incident_type": incident_type,
+                "date_time": date_time,
+                "location": location,
+                "reporting_officer": reporting_officer,
+                "status_type": status_type,
+                "priority_type": priority_type,
+                "notice": notice,
+                "description": description,
+                "evidence_files": evidence_file_paths,
+            }
+
+            # Insert into MongoDB
+            result = collection.insert_one(incident_data)
+            print(f"Document inserted with ID: {result.inserted_id}")
+
+            return jsonify({
+                "message": "Incident report submitted successfully!",
+                "incident_id": str(result.inserted_id),
+            }), 201
+        except Exception as e:
+            print(f"Error during submission: {e}")
+            return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+
+    # Render the form for GET requests
     return render_template("Police/incident-report.html")
+
+
 
 @app.route("/police/login")
 def police_login():
@@ -162,6 +269,7 @@ def submit_alert():
         'message': 'Alert submitted successfully',
         'inserted_id': str(result.inserted_id)
     })
+
 
 if __name__ == "__main__":
     app.run(debug=True)
