@@ -1,44 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Citizen </title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        .alert-card {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .alert-title {
-            font-weight: bold;
-            font-size: 1.2em;
-        }
-        .alert-message {
-            margin: 8px 0;
-        }
-        .alert-info {
-            font-size: 0.9em;
-            color: #555;
-        }
-        .notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            min-width: 250px;
-            max-width: 300px;
-            z-index: 1000;
-        }
-    </style>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}
+Home - Citizen Safety App
+{% endblock %}
+
+{% block content %}
     <h1>Citizen </h1>
     <div id="alertList"></div>
 
@@ -106,5 +72,4 @@ function getAlertColorClass(type) {
         // Initial fetch when page loads
         document.addEventListener('DOMContentLoaded', fetchAlerts);
     </script>
-</body>
-</html>
+{% endblock %}

@@ -1,111 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Broadcast Alerts - Police Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script> 
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#1e40af',
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        .sidebar {
-            transition: width 0.3s ease;
-        }
-        .sidebar.collapsed {
-            width: 64px;
-        }
-        .sidebar.expanded {
-            width: 250px;
-        }
-        .menu-text {
-            transition: opacity 0.3s ease;
-        }
-        .sidebar.collapsed .menu-text {
-            opacity: 0;
-            display: none;
-        }
-    </style>
-</head>
-<body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-200">
-    <!-- Top Navigation -->
-    <nav class="bg-white dark:bg-gray-800 shadow-md fixed w-full top-0 z-50 transition-colors duration-200">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center">
-                    <button id="sidebarToggle" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full mr-2 transition-colors duration-200">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <h1 class="text-xl font-bold dark:text-white">Police Dashboard</h1>
-                </div>
-                <div class="flex-1 max-w-2xl mx-4">
-                    <input type="text" placeholder="Search..." 
-                           class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary dark:bg-gray-700 dark:text-white dark:border-gray-600 transition-colors duration-200">
-                </div>
-                <div class="flex items-center space-x-4">
-                    <button id="darkModeToggle" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors duration-200">
-                        <i class="fas fa-moon dark:text-white"></i>
-                    </button>
-                    <button class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors duration-200">
-                        <i class="fas fa-user-circle dark:text-white"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </nav>
+{% extends "police_base.html" %}
 
-    <!-- Sidebar -->
-    <div id="sidebar" class="sidebar expanded fixed left-0 top-16 h-screen bg-white dark:bg-gray-800 shadow-lg z-40 transition-colors duration-200">
-        <div class="py-4">
-            <a href="cctv-feeds.html" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
-                <i class="fas fa-video w-6"></i>
-                <span class="menu-text ml-2">Real-Time CCTV Feeds</span>
-            </a>
-            <a href="crime-heatmap.html" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
-                <i class="fas fa-map-marked-alt w-6"></i>
-                <span class="menu-text ml-2">Crime Heatmap</span>
-            </a>
-            <a href="sos-notifications.html" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
-                <i class="fas fa-exclamation-circle w-6"></i>
-                <span class="menu-text ml-2">SOS Notifications</span>
-            </a>
-            <a href="incident-alerts.html" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
-                <i class="fas fa-bell w-6"></i>
-                <span class="menu-text ml-2">Incident Alerts</span>
-            </a>
-            <a href="offender-database.html" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
-                <i class="fas fa-database w-6"></i>
-                <span class="menu-text ml-2">Offender Database</span>
-            </a>
-            <a href="incident-report.html" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
-                <i class="fas fa-file-alt w-6"></i>
-                <span class="menu-text ml-2">Incident Report</span>
-            </a>
-            <a href="police-analytics.html" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
-                <i class="fas fa-chart-line w-6"></i>
-                <span class="menu-text ml-2">Police Analytics</span>
-            </a>
-            <a href="broadcast-alerts.html" class="flex items-center px-4 py-3 text-primary hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
-                <i class="fas fa-broadcast-tower w-6"></i>
-                <span class="menu-text ml-2 font-medium">Broadcast Alerts</span>
-            </a>
-        </div>
-    </div>
+{% block title %}
+Home - Citizen Safety App
+{% endblock %}
 
-    <!-- Main Content -->
-    <main class="transition-all duration-300" id="mainContent">
-        <div class="container mx-auto px-4 mt-20">
+{% block content %}
             <h2 class="text-2xl font-bold mb-4 dark:text-white">Broadcast Alerts</h2>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Alert Creation Form -->
@@ -186,43 +85,10 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('mainContent');
-            const sidebarToggle = document.getElementById('sidebarToggle');
-            const darkModeToggle = document.getElementById('darkModeToggle');
+           
             const alertForm = document.getElementById('alertForm');
             const recentAlerts = document.getElementById('recentAlerts');
             
-            function updateMainContentMargin() {
-                if (sidebar.classList.contains('collapsed')) {
-                    mainContent.style.marginLeft = '64px';
-                } else {
-                    mainContent.style.marginLeft = '250px';
-                }
-            }
-
-            // Initial margin
-            updateMainContentMargin();
-
-            sidebarToggle.addEventListener('click', function() {
-                sidebar.classList.toggle('collapsed');
-                sidebar.classList.toggle('expanded');
-                updateMainContentMargin();
-            });
-
-            // Dark mode toggle
-            darkModeToggle.addEventListener('click', function() {
-                document.documentElement.classList.toggle('dark');
-                const isDarkMode = document.documentElement.classList.contains('dark');
-                localStorage.setItem('darkMode', isDarkMode);
-                darkModeToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-            });
-
-            // Check for saved dark mode preference
-            if (localStorage.getItem('darkMode') === 'true') {
-                document.documentElement.classList.add('dark');
-                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-            }
         });
 
 
@@ -265,6 +131,5 @@
 
         
     </script>
-</body>
-</html>
+{% endblock %}
 

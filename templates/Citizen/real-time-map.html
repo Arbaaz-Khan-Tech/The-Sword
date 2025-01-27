@@ -74,29 +74,33 @@
 
     <!-- Sidebar -->
     <div id="sidebar" class="sidebar expanded fixed left-0 top-16 h-screen bg-white dark:bg-gray-800 shadow-lg z-40 transition-colors duration-200">
-        <div class="py-4">
-            <a href="sos.html" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
-                <i class="fas fa-exclamation-circle w-6"></i>
-                <span class="menu-text ml-2">SOS</span>
-            </a>
-            <a href="#" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
-                <i class="fas fa-flag w-6"></i>
-                <span class="menu-text ml-2">Report Incident</span>
-            </a>
-            <a href="incident-alerts.html" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
-                <i class="fas fa-bell w-6"></i>
-                <span class="menu-text ml-2">Incident Alerts</span>
-            </a>
-            <a href="real-time-map.html" class="flex items-center px-4 py-3 text-primary hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
-                <i class="fas fa-map w-6"></i>
-                <span class="menu-text ml-2 font-medium">Real-Time Map</span>
-            </a>
-            <a href="geofencing.html" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
-                <i class="fas fa-map-marker-alt w-6"></i>
-                <span class="menu-text ml-2">Geofencing</span>
-            </a>
-        </div>
-    </div>
+      <div class="py-4">
+          <a href="/citizen/sos" class="flex items-center px-4 py-3 text-primary hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
+              <i class="fas fa-exclamation-circle w-6"></i>
+              <span class="menu-text ml-2 font-medium">SOS</span>
+          </a>
+          <a href="/citizen/incident-report" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
+              <i class="fas fa-flag w-6"></i>
+              <span class="menu-text ml-2">Report Incident</span>
+          </a>
+          <a href="/citizen/incident-alerts" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
+              <i class="fas fa-bell w-6"></i>
+              <span class="menu-text ml-2">Incident Alerts</span>
+          </a>
+          <a href="/citizen/real-time-map" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
+              <i class="fas fa-map w-6"></i>
+              <span class="menu-text ml-2">Real-Time Map</span>
+          </a>
+          <a href="/citizen/geofencing" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
+              <i class="fas fa-map-marker-alt w-6"></i>
+              <span class="menu-text ml-2">Geofencing</span> 
+          </a>
+          <a href="/Citizen/alerts" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
+              <i class="fas fa-map-bell-alt w-6"></i>
+              <span class="menu-text ml-2">Alerts</span> 
+          </a>
+      </div>
+  </div>
 
     <!-- Main Content -->
     <main class="transition-all duration-300" id="mainContent">
@@ -175,4 +179,3 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     </script>
 </body>
 </html>
-

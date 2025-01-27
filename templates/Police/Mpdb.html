@@ -1,44 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Missing Persons List - Missing Person Detection</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-stone-50">
-    <!-- Navigation -->
-    <nav class="bg-stone-600 text-white shadow-lg">
-        <div class="container mx-auto px-4 py-3">
-            <div class="flex justify-between items-center">
-                <div class="text-xl font-bold">Missing Person Detection</div>
-                <div class="space-x-4">
-                    <a href="index.html" class="hover:text-stone-200">Home</a>
-                    <a href="dashboard.html" class="hover:text-stone-200">Dashboard</a>
-                    <a href="missing-persons.html" class="hover:text-stone-200">Missing Persons</a>
-                    <a href="community.html" class="hover:text-stone-200">Community</a>
-                    <a href="contact.html" class="hover:text-stone-200">Contact</a>
-                </div>
-            </div>
-        </div>
-    </nav>
+{% extends "police_base.html" %}
 
-    <!-- Search Section -->
-    <div class="bg-stone-500 text-white py-8">
-        <div class="container mx-auto px-4">
-            <h1 class="text-3xl font-bold mb-6">Missing Persons List</h1>
-            <div class="flex gap-4 mb-4">
-                <input type="text" placeholder="Search by name or case ID" 
-                    class="w-full p-2 rounded text-stone-800">
-                <button class="bg-white text-stone-500 px-6 py-2 rounded font-semibold hover:bg-stone-50">
-                    Search
-                </button>
-            </div>
-        </div>
-    </div>
+{% block title %}
+Home - Citizen Safety App
+{% endblock %}
 
-    <!-- Missing Persons Grid -->
-    <div class="container mx-auto px-4 py-8">
+{% block content %}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Missing Person Card -->
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
@@ -103,5 +69,4 @@
             <p>&copy; 2024 Missing Person Detection System. All rights reserved.</p>
         </div>
     </footer>
-</body>
-</html>
+    {% endblock %}

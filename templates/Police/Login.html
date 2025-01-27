@@ -266,6 +266,11 @@ input:focus {
         body.classList.remove('citizen');
         formTitle.textContent = 'Police Login';
         usernameInput.placeholder = 'Police ID';
+        loginForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          window.location.replace("http://localhost:5000/police");
+        
+        });
       } else {
         body.classList.add('citizen');
         formTitle.textContent = 'Citizen Login';
@@ -283,7 +288,7 @@ input:focus {
     const formData = new FormData(loginForm);
     const data = Object.fromEntries(formData.entries());
     console.log('Form submitted:', data);
-    window.location.replace("http://localhost:5000/police/cctv-feeds");
+    
     
     // Add your login logic here
   });

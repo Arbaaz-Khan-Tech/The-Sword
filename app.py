@@ -115,14 +115,15 @@ db=client["SurakshaSetu"]
 alerts_collection = db["Alerts_Citizen"]  # For citizen-submitted reports jaha verify ke baad incident me jayega
 incidents_collection = db["Incidents"]  # For police-submitted reports
 Alert_Collection = db["Alerts"]
-Markers_Collection = db["Markers"]
+markers_collection = db["Markers"]
 
 
 
 
 @app.route('/')
 def index():
-    return render_template('/Police/index.html')
+    return render_template('/Police/Login.html')
+
 
 
 @app.route("/citizen/geofencing")

@@ -1,45 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Police Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#1e40af',
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        .sidebar {
-            transition: width 0.3s ease;
-        }
-        .sidebar.collapsed {
-            width: 64px;
-        }
-        .sidebar.expanded {
-            width: 250px;
-        }
-        .menu-text {
-            transition: opacity 0.3s ease;
-        }
-        .sidebar.collapsed .menu-text {
-            opacity: 0;
-            display: none;
-        }
-    </style>
-</head>
-<body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-200">
-    <!-- Top Navigation -->
-    <nav class="bg-white dark:bg-gray-800 shadow-md fixed w-full top-0 z-50 transition-colors duration-200">
+{% extends "police_base.html" %}
+
+{% block title %}
+Home - Citizen Safety App
+{% endblock %}
+
+{% block content %}
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center">
@@ -157,44 +122,4 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('mainContent');
-            const sidebarToggle = document.getElementById('sidebarToggle');
-            const darkModeToggle = document.getElementById('darkModeToggle');
-            
-            function updateMainContentMargin() {
-                if (sidebar.classList.contains('collapsed')) {
-                    mainContent.style.marginLeft = '64px';
-                } else {
-                    mainContent.style.marginLeft = '250px';
-                }
-            }
-
-            // Initial margin
-            updateMainContentMargin();
-
-            sidebarToggle.addEventListener('click', function() {
-                sidebar.classList.toggle('collapsed');
-                sidebar.classList.toggle('expanded');
-                updateMainContentMargin();
-            });
-
-            // Dark mode toggle
-            darkModeToggle.addEventListener('click', function() {
-                document.documentElement.classList.toggle('dark');
-                const isDarkMode = document.documentElement.classList.contains('dark');
-                localStorage.setItem('darkMode', isDarkMode);
-                darkModeToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-            });
-
-            // Check for saved dark mode preference
-            if (localStorage.getItem('darkMode') === 'true') {
-                document.documentElement.classList.add('dark');
-                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-            }
-        });
-    </script>
-</body>
-</html>
+{% endblock %}
