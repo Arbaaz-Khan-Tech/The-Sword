@@ -97,7 +97,15 @@
     <main class="transition-all duration-300" id="mainContent">
         <div class="container mx-auto px-4 mt-16">
             <h2 class="text-2xl font-bold mb-6 dark:text-white">Incident Alerts</h2>
-    
+            
+            <!-- Fallback Message -->
+        {% if incidents|length == 0 %}
+        <div class="text-center text-gray-600 dark:text-gray-400 py-10">
+            <i class="fas fa-info-circle text-4xl mb-4"></i>
+            <p class="text-xl font-medium">No details available.</p>
+        </div>
+        {% else %}
+
             <!-- Incident Container -->
             {% for incident in incidents %}
             <div class="border-l-4 rounded-lg shadow-md p-4 mb-6 
@@ -125,8 +133,17 @@
                 </div>
                 <p class="mt-2 dark:text-gray-400">Location: {{ incident.location }}</p>
                 <p class="dark:text-gray-400">Date/Time: {{ incident.date_time }}</p>
-                <p class="dark:text-gray-400">Reporting Officer: {{ incident.reporting_officer }}</p>
+                
+                {% if incident.reporting_officer %}
+                    <p class="dark:text-gray-400">Reporting Officer: {{ incident.reporting_officer }}</p>
+                {% elif incident.reporting_citizen %}
+                    <p class="dark:text-gray-400">Reporting Citizen: {{ incident.reporting_citizen }}</p>
+                {% else %}
+                    <p class="dark:text-gray-400">Reporting Person: Unknown</p>
+                {% endif %}
+                
                 <p class="dark:text-gray-400">Notice: {{ incident.notice }}</p>
+                
     
                 <!-- Action Buttons -->
                 <div class="mt-4 flex justify-between">
@@ -159,6 +176,7 @@
                 </div>
             </div>
             {% endfor %}
+            {% endif %}
         </div>
     </main>
 
