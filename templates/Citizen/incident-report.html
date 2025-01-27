@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incident Alerts - Citizen Safety App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#ff6b00',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .sidebar {
+            transition: width 0.3s ease;
+        }
+        .sidebar.collapsed {
+            width: 64px;
+        }
+        .sidebar.expanded {
+            width: 250px;
+        }
+        .menu-text {
+            transition: opacity 0.3s ease;
+        }
+        .sidebar.collapsed .menu-text {
+            opacity: 0;
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-200">
+    <!-- Top Navigation -->
+    <nav class="bg-white dark:bg-gray-800 shadow-md fixed w-full top-0 z-50 transition-colors duration-200">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <button id="sidebarToggle" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full mr-2 transition-colors duration-200">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="text-xl font-bold dark:text-white">Citizen</h1>
+                </div>
+                <div class="flex-1 max-w-2xl mx-4">
+                    <input type="text" placeholder="Search incidents..." 
+                           class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary dark:bg-gray-700 dark:text-white dark:border-gray-600 transition-colors duration-200">
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="darkModeToggle" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors duration-200">
+                        <i class="fas fa-moon dark:text-white"></i>
+                    </button>
+                    <button class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors duration-200">
+                        <i class="fas fa-question-circle dark:text-white"></i>
+                    </button>
+                    <button class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors duration-200">
+                        <i class="fas fa-bell dark:text-white"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar expanded fixed left-0 top-16 h-screen bg-white dark:bg-gray-800 shadow-lg z-40 transition-colors duration-200">
+        <div class="py-4">
+            <a href="sos.html" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
+                <i class="fas fa-exclamation-circle w-6"></i>
+                <span class="menu-text ml-2">SOS</span>
+            </a>
+            <a href="#" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
+                <i class="fas fa-flag w-6"></i>
+                <span class="menu-text ml-2">Report Incident</span>
+            </a>
+            <a href="incident-alerts.html" class="flex items-center px-4 py-3 text-primary hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
+                <i class="fas fa-bell w-6"></i>
+                <span class="menu-text ml-2 font-medium">Incident Alerts</span>
+            </a>
+            <a href="real-time-map.html" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
+                <i class="fas fa-map w-6"></i>
+                <span class="menu-text ml-2">Real-Time Map</span>
+            </a>
+            <a href="geofencing.html" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary transition-colors duration-200">
+                <i class="fas fa-map-marker-alt w-6"></i>
+                <span class="menu-text ml-2">Geofencing</span>
+            </a>
+        </div>
+    </div>
+
+
+    <!-- Main Content -->
+    <main class="transition-all duration-300" id="mainContent">
+        <div class="container mx-auto px-4 mt-20">
+            <h2 class="text-2xl font-bold mb-4 dark:text-white">Incident Report</h2>
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <form id="incidentReportForm" action="#" method="POST" enctype="multipart/form-data">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="incidentType" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Incident Type</label>
+                            <select id="incidentType" name="incidentType" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white dark:border-gray-600">
+                                <option value="">Select Incident Type</option>
+                                <option value="theft">Theft</option>
+                                <option value="assault">Assault</option>
+                                <option value="burglary">Burglary</option>
+                                <option value="vandalism">Vandalism</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="dateTime" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date and Time</label>
+                            <input type="datetime-local" id="dateTime" name="dateTime" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white dark:border-gray-600">
+                        </div>
+                        <div>
+                            <label for="location" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Location</label>
+                            <input type="text" id="location" name="location" placeholder="Enter incident location" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white dark:border-gray-600">
+                        </div>
+                        <div>
+                            <label for="reportingCitizen" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Reporting Citizen</label>
+                            <input type="text" id="reportingCitizen" name="reportingCitizen" placeholder="Enter citizen name" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white dark:border-gray-600">
+                        </div>
+                        <div>
+                            <label for="statusType" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status Type</label>
+                            <select id="statusType" name="statusType" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white dark:border-gray-600">
+                                <option value="">Select Status Type</option>
+                                <option value="ongoing">Ongoing</option>
+                                <option value="solved">Solved</option>
+                                <option value="pending">Pending</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="priorityType" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Priority Type</label>
+                            <select id="priorityType" name="priorityType" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white dark:border-gray-600">
+                                <option value="">Select Priority Type</option>
+                                <option value="high">High</option>
+                                <option value="medium">Medium</option>
+                                <option value="low">Low</option>
+                             </select>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <label for="notice" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Incident Notice</label>
+                        <textarea id="notice" name="notice" rows="1" placeholder="Provide a detailed notice of the incident" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white dark:border-gray-600"></textarea>
+                    </div>
+                    <div class="mt-6">
+                        <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Incident Description</label>
+                        <textarea id="description" name="description" rows="4" placeholder="Provide a detailed description of the incident" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white dark:border-gray-600"></textarea>
+                    </div>
+                    <div class="mt-6">
+                        <label for="evidence" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Evidence</label>
+                        <input type="file" id="evidence" name="evidence" multiple class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white dark:border-gray-600">
+                    </div>
+                    <div class="mt-6">
+                        <button type="submit" class="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark transition-colors duration-200">Submit Report</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+
+
+    <div id="successModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-lg p-6 w-1/3 relative">
+            <!-- Close Button -->
+            <button id="closeModalButton" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+    
+            <!-- Pending Exclamation Animation -->
+            <div class="flex justify-center mb-4">
+                <div class="bg-yellow-500 rounded-full w-16 h-16 flex items-center justify-center animate-checkmark">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="text-white w-8 h-8 checkmark" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.682-1.36 3.447 0l5.516 9.802c.724 1.287-.195 2.899-1.723 2.899H4.464c-1.528 0-2.447-1.612-1.723-2.899l5.516-9.802zM11 13a1 1 0 10-2 0 1 1 0 002 0zm-2-5a1 1 0 011-1h.01a1 1 0 01.99 1l-.073 2a1 1 0 01-1.854 0l-.073-2z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+            </div>
+    
+            <!-- Pending Message -->
+            <h2 class="text-xl font-bold text-yellow-600 text-center mb-4">Report Pending Approval</h2>
+            <p class="text-gray-700 text-center mb-6">Your incident report has been submitted and is pending review by the police officer.</p>
+    
+            <!-- Alert ID -->
+            <p class="text-center text-gray-500">
+                <span class="font-bold">Alert ID:</span> 
+                <span id="incidentId" class="text-gray-800 font-mono"></span>
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const incidentReportForm = document.getElementById('incidentReportForm');
+            const successModal = document.getElementById('successModal');
+            const closeModalButton = document.getElementById('closeModalButton');
+            const incidentIdElement = document.getElementById('incidentId');
+
+            function updateMainContentMargin() {
+                if (sidebar.classList.contains('collapsed')) {
+                    mainContent.style.marginLeft = '64px';
+                } else {
+                    mainContent.style.marginLeft = '250px';
+                }
+            }
+
+            // Initial margin
+            updateMainContentMargin();
+
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('collapsed');
+                sidebar.classList.toggle('expanded');
+                updateMainContentMargin();
+            });
+
+            // Dark mode toggle
+            darkModeToggle.addEventListener('click', function() {
+                document.documentElement.classList.toggle('dark');
+                const isDarkMode = document.documentElement.classList.contains('dark');
+                localStorage.setItem('darkMode', isDarkMode);
+                darkModeToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            });
+
+            // Check for saved dark mode preference
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.documentElement.classList.add('dark');
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+
+            // Handle form submission
+            incidentReportForm.addEventListener('submit', function (e) {
+            e.preventDefault(); // Prevent default form submission
+
+            const formData = new FormData(incidentReportForm);
+
+            fetch('/citizen/incident-report', {
+                method: 'POST',
+                body: formData,
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        // Show the success modal
+                        incidentIdElement.textContent = data.alert_id; // Set the incident ID
+                        successModal.classList.remove('hidden');
+                        successModal.classList.add('flex');
+
+                        // Reset the form
+                        incidentReportForm.reset();
+                    } else if (data.error) {
+                        alert('Error: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while submitting the form.');
+                });
+        });
+
+        // Close the modal when the close button is clicked
+        closeModalButton.addEventListener('click', function () {
+            successModal.classList.add('hidden');
+            successModal.classList.remove('flex');
+        });
+        });
+            
+       
+    </script>
+</body>
+</html>
+

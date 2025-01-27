@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Incident Report - Police Dashboard</title>
+    <title>Incident alert - Police Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script>
@@ -115,10 +115,18 @@
         </div>
     </div>
 
-    <!-- Main Content -->
-    <main class="transition-all duration-300" id="mainContent">
+  <!-- Main Content -->
+<main class="transition-all duration-300" id="mainContent">
     <div class="container mx-auto px-4 mt-16">
         <h2 class="text-2xl font-bold mb-6 dark:text-white">Incident Alerts</h2>
+
+        <!-- Fallback Message -->
+        {% if incidents|length == 0 %}
+        <div class="text-center text-gray-600 dark:text-gray-400 py-10">
+            <i class="fas fa-info-circle text-4xl mb-4"></i>
+            <p class="text-xl font-medium">No details available.</p>
+        </div>
+        {% else %}
 
         <!-- Incident Container -->
         {% for incident in incidents %}
@@ -147,12 +155,19 @@
             </div>
             <p class="mt-2 dark:text-gray-400">Location: {{ incident.location }}</p>
             <p class="dark:text-gray-400">Date/Time: {{ incident.date_time }}</p>
-            <p class="dark:text-gray-400">Reporting Officer: {{ incident.reporting_officer }}</p>
+
+            {% if incident.reporting_officer %}
+                <p class="dark:text-gray-400">Reporting Officer: {{ incident.reporting_officer }}</p>
+            {% elif incident.reporting_citizen %}
+                <p class="dark:text-gray-400">Reporting Citizen: {{ incident.reporting_citizen }}</p>
+            {% else %}
+                <p class="dark:text-gray-400">Reporting Person: Unknown</p>
+            {% endif %}
+
             <p class="dark:text-gray-400">Notice: {{ incident.notice }}</p>
 
             <!-- Action Buttons -->
             <div class="mt-4 flex justify-between">
-                <!-- Buttons disappear if status is solved -->
                 {% if incident.status_type != 'solved' %}
                 <div class="flex space-x-2">
                     <button onclick="updateStatus('{{ incident._id }}', 'pending')" 
@@ -192,8 +207,26 @@
             </div>
         </div>
         {% endfor %}
+        {% endif %}
     </div>
 </main>
+
+
+<!-- Success/Error Modal -->
+<div id="statusModal" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-1/3 text-center">
+        <!-- Icon -->
+        <i id="statusIcon" class="fas fa-check-circle text-green-500 text-4xl mb-4"></i>
+        <!-- Message -->
+        <h3 id="statusMessage" class="text-xl font-bold dark:text-white"></h3>
+        <!-- Close Button -->
+        <button onclick="closeModal()" class="mt-4 bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark">
+            OK
+        </button>
+    </div>
+</div>
+
+
 
     <script>
         // Toggle Details Visibility
@@ -203,27 +236,56 @@
         }
 
         // Update Incident Status
-        async function updateStatus(incidentId, status) {
-            try {
-                const response = await fetch(`/police/update-incident-status/${incidentId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ status })
-                });
-                const result = await response.json();
-                if (response.ok) {
-                    alert(result.message);
-                    location.reload(); // Reload the page to reflect changes
-                } else {
-                    alert(result.error);
-                }
-            } catch (error) {
-                console.error('Error updating status:', error);
-                alert('Failed to update incident status.');
-            }
+async function updateStatus(incidentId, status) {
+    try {
+        const response = await fetch(`/police/update-incident-status/${incidentId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status })
+        });
+        const result = await response.json();
+
+        // Display the modal based on the response
+        if (response.ok) {
+            showModal("success", result.message); // Show success modal
+        } else {
+            showModal("error", result.error || "An error occurred."); // Show error modal
         }
+    } catch (error) {
+        console.error('Error updating status:', error);
+        showModal("error", "Failed to update incident status."); // Show error modal on failure
+    }
+}
+
+// Show the modal with animation
+function showModal(type, message) {
+    const modal = document.getElementById('statusModal');
+    const icon = document.getElementById('statusIcon');
+    const statusMessage = document.getElementById('statusMessage');
+
+    // Set the icon and color based on the type of message (success or error)
+    if (type === "success") {
+        icon.className = "fas fa-check-circle text-green-500 text-4xl mb-4"; // Success icon
+    } else if (type === "error") {
+        icon.className = "fas fa-times-circle text-red-500 text-4xl mb-4"; // Error icon
+    }
+
+    // Set the message text
+    statusMessage.textContent = message;
+
+    // Show the modal
+    modal.classList.remove('hidden');
+}
+
+// Close the modal
+function closeModal() {
+    const modal = document.getElementById('statusModal');
+    modal.classList.add('hidden'); // Hide the modal
+    location.reload(); // Reload the page to reflect changes
+}
+    
 
               document.addEventListener('DOMContentLoaded', function() {
             const sidebar = document.getElementById('sidebar');
