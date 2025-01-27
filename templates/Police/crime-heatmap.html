@@ -41,6 +41,8 @@
         #map {
             height: calc(100vh - 4rem);
         }
+
+        
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-200">
@@ -176,48 +178,56 @@
             }
 
             // Initialize map
-            const map = L.map('map').setView([37.7749, -122.4194], 13);
+            // Initialize the map
+    const map = L.map('map').setView([19.0628161,72.8888403,], 13); 
 
-            function updateMapStyle() {
-                const isDarkMode = document.documentElement.classList.contains('dark');
-                if (isDarkMode) {
-                    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-                        subdomains: 'abcd',
-                        maxZoom: 19
-                    }).addTo(map);
-                } else {
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    }).addTo(map);
-                }
-            }
+// Add OpenStreetMap tiles
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© OpenStreetMap contributors'
+}).addTo(map);
 
-            updateMapStyle();
-
-            // Sample crime data
-            const crimeData = [
-                [37.7749, -122.4194, 0.5],
-                [37.7694, -122.4862, 0.8],
-                [37.8019, -122.4189, 0.3],
-                [37.7857, -122.4011, 0.6],
-                [37.7879, -122.4074, 0.4]
-            ];
-
-            // Add heatmap layer
-            const heat = L.heatLayer(crimeData, {radius: 25}).addTo(map);
-
-            // Update heatmap on filter change
-            document.getElementById('timeRange').addEventListener('change', updateHeatmap);
-            document.getElementById('crimeType').addEventListener('change', updateHeatmap);
-
-            function updateHeatmap() {
-                // In a real application, you would fetch new data based on the selected filters
-                // For this example, we'll just randomize the intensity
-                const newData = crimeData.map(point => [point[0], point[1], Math.random()]);
-                heat.setLatLngs(newData);
-            }
+async function sendMarkerToBackend(lat, lng) {
+      try {
+        const response = await fetch('/api/markers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lat, lng, })
         });
+        const data = await response.json();
+        console.log('Marker saved:', data);
+      } catch (error) {
+        console.error('Error saving marker:', error);
+      }
+    }
+
+    // Add a marker on map click
+    map.on('click', (e) => {
+      const { lat, lng } = e.latlng;
+
+      // Add marker to the map
+      const marker = L.marker([lat, lng]).addTo(map);
+
+      // Send coordinates to the backend
+      sendMarkerToBackend(lat, lng);
+    });
+
+    // Fetch and display stored markers from the backend
+    async function loadMarkers() {
+      try {
+        const response = await fetch('/api/markers');
+        const markers = await response.json();
+
+        markers.forEach(({ lat, lng }) => {
+          L.marker([lat, lng]).addTo(map);
+        });
+      } catch (error) {
+        console.error('Error loading markers:', error);
+      }
+    }
+
+    // Load markers when the page loads
+    loadMarkers();});
+
     </script>
 </body>
 </html>

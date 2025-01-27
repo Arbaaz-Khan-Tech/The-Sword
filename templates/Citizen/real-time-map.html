@@ -143,47 +143,35 @@
             }
 
             // Initialize map
-            const map = L.map('map').setView([37.7749, -122.4194], 13);
+            const map = L.map('map').setView([19.0628161,72.8888403,], 13); 
 
-            function updateMapStyle() {
-                const isDarkMode = document.documentElement.classList.contains('dark');
-                if (isDarkMode) {
-                    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-                        subdomains: 'abcd',
-                        maxZoom: 19
-                    }).addTo(map);
-                } else {
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    }).addTo(map);
-                }
-            }
+// Add OpenStreetMap tiles
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© OpenStreetMap contributors'
+}).addTo(map);
 
-            updateMapStyle();
 
-            // Sample incident data
-            const incidents = [
-                { lat: 37.7749, lng: -122.4194, title: "Active Shooter", priority: "high" },
-                { lat: 37.7694, lng: -122.4862, title: "Traffic Accident", priority: "medium" },
-                { lat: 37.8019, lng: -122.4189, title: "Power Outage", priority: "low" }
-            ];
 
-            // Add incident markers
-            incidents.forEach(incident => {
-                const markerColor = incident.priority === "high" ? "red" : (incident.priority === "medium" ? "orange" : "blue");
-                const marker = L.circleMarker([incident.lat, incident.lng], {
-                    radius: 8,
-                    fillColor: markerColor,
-                    color: "#000",
-                    weight: 1,
-                    opacity: 1,
-                    fillOpacity: 0.8
-                }).addTo(map);
+    // Add a marker on map click
+    
 
-                marker.bindPopup(`<b>${incident.title}</b><br>Priority: ${incident.priority}`);
-            });
+    // Fetch and display stored markers from the backend
+    async function loadMarkers() {
+      try {
+        const response = await fetch('/api/markers');
+        const markers = await response.json();
+
+        markers.forEach(({ lat, lng }) => {
+          L.marker([lat, lng]).addTo(map);
         });
+      } catch (error) {
+        console.error('Error loading markers:', error);
+      }
+    }
+
+    // Load markers when the page loads
+    loadMarkers();});
+
     </script>
 </body>
 </html>
