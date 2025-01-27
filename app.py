@@ -13,13 +13,16 @@ from bson import ObjectId
 import uuid
 
 
+
 import logging
 from flask_socketio import SocketIO
 import pywhatkit as kit
 
 
-from datetime import datetime, timedelta
+import datetime
+
 import json
+
 
 # Load data from JSON file
 with open('config.json', 'r') as file:
@@ -109,11 +112,8 @@ mongo_con="mongodb://localhost:27017"
 client=MongoClient(mongo_con)
 db=client["SurakshaSetu"]
 
-alerts_collection = db["Alerts"]  # For citizen-submitted reports jaha verify ke baad incident me jayega
+alerts_collection = db["Alerts_Citizen"]  # For citizen-submitted reports jaha verify ke baad incident me jayega
 incidents_collection = db["Incidents"]  # For police-submitted reports
-
-
-collection=db["Incidents"]
 Alert_Collection = db["Alerts"]
 Markers_Collection = db["Markers"]
 
@@ -430,8 +430,8 @@ def submit_alert():
    
         
         # Schedule the message to be sent in 1 minute
-        now = datetime.now()
-        send_time = now + timedelta(minutes=1)
+        now =  datetime.datetime.now()
+        send_time = now + datetime.timedelta(minutes=2)
         kit.sendwhatmsg(phone_number, whatsapp_message, send_time.hour, send_time.minute)
 
         return jsonify({
