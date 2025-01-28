@@ -78,7 +78,8 @@ def detect_objects(frame):
 # Function to generate frames from webcam
 def generate_frames():
     global detected_objects
-    cap = cv2.VideoCapture(0)
+    # camera_url = "https://192.168.137.220:4343/video"  # Replace with the URL shown in the app
+    cap = cv2.VideoCapture(0) 
     while True:
         success, frame = cap.read()
         if not success:
@@ -225,6 +226,11 @@ def citizen_real_time_map():
 @app.route("/citizen/sos")
 def citizen_sos():
     return render_template("Citizen/sos.html")
+
+
+@app.route("/Citizen")
+def citizen_Index():
+    return render_template("Citizen/index.html")
 
 # Police Side Routes
 @app.route("/police")
