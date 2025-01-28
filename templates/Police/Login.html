@@ -275,6 +275,11 @@ input:focus {
         body.classList.add('citizen');
         formTitle.textContent = 'Citizen Login';
         usernameInput.placeholder = 'Username';
+        loginForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          window.location.replace("http://localhost:5000/Citizen");
+        
+        });
       }
 
       // Clear form
