@@ -198,8 +198,8 @@ def citizen_incident_report():
                 "description": description,
                 "evidence_files": evidence_file_paths,
                 "report_status": "pending",  # New field to indicate the status of the report
-                "created_at": datetime.datetime.utcnow(),
-                "updated_at": datetime.datetime.utcnow(),
+                
+                
             }
 
             # Insert into the Alerts collection
@@ -221,6 +221,10 @@ def citizen_incident_report():
 @app.route("/citizen/real-time-map")
 def citizen_real_time_map():
     return render_template("Citizen/real-time-map.html")
+
+@app.route("/citizen/safewalk")
+def citizen_safewalk():
+    return render_template("Citizen/safewalk.html")
 
 @app.route("/citizen/sos")
 def citizen_sos():
@@ -393,10 +397,6 @@ def Police_Missing_Person_Database():
 def Police_Broadcast_Alert():
     return render_template("Police/Broadcast_Alert.html")  
 
-
-
-    
-
 @app.route('/submit_alert', methods=['POST'])
 def submit_alert():
     try:
@@ -405,13 +405,18 @@ def submit_alert():
             'alertType': request.form.get('alertType'),
             'alertTitle': request.form.get('alertTitle'),
             'alertMessage': request.form.get('alertMessage'),
-            'alertLocation': request.form.get('alertLocation'),
+            'location': request.form.get('location'),
             'alertDuration': int(request.form.get('alertDuration') or 0),
-            'targetAudience': request.form.getlist('targetAudience')
+            'targetAudience': request.form.getlist('targetAudience'),
+            'status_type' : "pending" ,
+            'priority_type' : "high",
+            'date_time' : request.form.get("dateTime"),
+            "created_at": datetime.datetime.utcnow(),
+            "updated_at": datetime.datetime.utcnow(),
         }
 
         # Insert into MongoDB
-        result = Alert_Collection.insert_one(alert_data)
+        result = incidents_collection.insert_one(alert_data)
         alert_data['_id'] = str(result.inserted_id)
 
         # Broadcast the new alert to connected clients (if using Socket.IO)
@@ -423,7 +428,7 @@ def submit_alert():
             f"Type: {alert_data['alertType']}\n"
             f"Title: {alert_data['alertTitle']}\n"
             f"Message: {alert_data['alertMessage']}\n"
-            f"Location: {alert_data['alertLocation']}\n"
+            f"Location: {alert_data['location']}\n"
             f"Duration: {alert_data['alertDuration']} hours\n"
             f"Target Audience: {', '.join(alert_data['targetAudience'])}"
         )

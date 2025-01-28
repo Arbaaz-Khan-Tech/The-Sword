@@ -29,8 +29,12 @@ Home - Citizen Safety App
                             <textarea id="alertMessage" name="alertMessage" rows="4" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white dark:border-gray-600" required></textarea>
                         </div>
                         <div class="mb-4">
-                            <label for="alertLocation" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Location</label>
-                            <input type="text" id="alertLocation" name="alertLocation" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white dark:border-gray-600" required>
+                            <label for="location" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Alert Location</label>
+                            <input type="text" id="location" name="location" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white dark:border-gray-600" required>
+                        </div>
+                        <div>
+                            <label for="dateTime" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date and Time</label>
+                            <input type="datetime-local" id="dateTime" name="dateTime" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white dark:border-gray-600">
                         </div>
                         <div class="mb-4">
                             <label for="alertDuration" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Alert Duration (hours)</label>
@@ -118,7 +122,7 @@ Home - Citizen Safety App
                             <p class="text-sm text-gray-600 dark:text-gray-300">${alertData.alertMessage}</p>
                             <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
                                 <span class="font-medium">Type:</span> ${alertData.alertType} |
-                                <span class="font-medium">Location:</span> ${alertData.alertLocation} |
+                                <span class="font-medium">Location:</span> ${alertData.location} |
                                 <span class="font-medium">Duration:</span> ${alertData.alertDuration} hours
                             </p>
                             <p class="text-sm text-gray-500 dark:text-gray-400">
