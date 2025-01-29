@@ -181,16 +181,22 @@ async function sendFrame(imageBlob) {
             .then(response => response.json())
             .then(data => {
                 if (data.detected_objects.length > 0) {
-                    const timestamp = new Date().toLocaleTimeString();
-                    data.detected_objects.forEach(obj => {
-                        const notification = document.createElement('div');
-                        notification.textContent = `Detected: ${obj} at ${timestamp}`;
-                        notificationDiv.appendChild(notification);
+    const timestamp = new Date().toLocaleTimeString();
+    data.detected_objects.forEach(obj => {
+        // Check if the object contains 'knife' (case-insensitive)
+        if (/knife/i.test(obj)) {
+            return; // Skip this object if it's a knife
+        }
 
-                        // Show system notification
-                        showSystemNotification(`Detected: ${obj} at ${timestamp}`);
-                    });
-                }
+        const notification = document.createElement('div');
+        notification.textContent = `Detected: ${obj} at ${timestamp}`;
+        notificationDiv.appendChild(notification);
+
+        // Show system notification
+        showSystemNotification(`Detected: ${obj} at ${timestamp}`);
+    });
+}
+
             });
     }
 

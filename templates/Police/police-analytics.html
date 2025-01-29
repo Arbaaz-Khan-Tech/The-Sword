@@ -1,186 +1,183 @@
-{% extends "police_base.html" %}
+{% extends 'police_base.html' %}
 
-{% block title %}
-Home - Citizen Safety App
-{% endblock %}
+{% block title %}Police Analytics Dashboard - Police Dashboard{% endblock %}
 
 {% block content %}
-        <div class="container mx-auto px-4 mt-20">
-            <h2 class="text-2xl font-bold mb-4 dark:text-white">Police Analytics Dashboard</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-                <!-- Key Performance Indicators -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
-                    <h3 class="text-lg font-semibold mb-2 dark:text-white">Total Incidents (Last 30 Days)</h3>
-                    <p class="text-3xl font-bold text-primary">1,234</p>
-                </div>
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
-                    <h3 class="text-lg font-semibold mb-2 dark:text-white">Average Response Time</h3>
-                    <p class="text-3xl font-bold text-primary">8.5 min</p>
-                </div>
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
-                    <h3 class="text-lg font-semibold mb-2 dark:text-white">Case Clearance Rate</h3>
-                    <p class="text-3xl font-bold text-primary">68%</p>
-                </div>
-            </div>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
-                <!-- Crime Trend Chart -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
-                    <h3 class="text-lg font-semibold mb-2 dark:text-white">Crime Trend (Last 12 Months)</h3>
-                    <canvas id="crimeTrendChart"></canvas>
-                </div>
-                <!-- Incident Types Pie Chart -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
-                    <h3 class="text-lg font-semibold mb-2 dark:text-white">Incident Types Distribution</h3>
-                    <canvas id="incidentTypesChart"></canvas>
-                </div>
-            </div>
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-8">
-                <h3 class="text-lg font-semibold mb-2 dark:text-white">Top 5 High-Crime Areas</h3>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead class="bg-gray-50 dark:bg-gray-900">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Area</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Incidents</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Change</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Downtown</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">245</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">+5%</td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Central Park</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">198</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">-2%</td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Westside</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">176</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">+8%</td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Northend</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">154</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">-3%</td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Eastside</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">132</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">+1%</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+<div class="container mx-auto px-4 mt-20">
+    <h2 class="text-2xl font-bold mb-4 dark:text-white">Police Analytics Dashboard</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        <!-- Key Performance Indicators -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+            <h3 class="text-lg font-semibold mb-2 dark:text-white">Total Incidents (Last 30 Days)</h3>
+            <p class="text-3xl font-bold text-primary">1,234</p>
         </div>
-    </main>
-
-    <!-- Bottom Notifications Bar -->
-    <div class="fixed bottom-0 left-0 right-0 bg-gray-200 dark:bg-gray-700 p-2 transition-colors duration-200">
-        <div class="container mx-auto">
-            <div class="overflow-hidden h-6">
-                <div class="animate-marquee whitespace-nowrap">
-                    <span class="text-gray-800 dark:text-gray-200 mx-4">SOS: Robbery in progress at 123 Main St</span>
-                    <span class="text-gray-800 dark:text-gray-200 mx-4">Incident: Traffic accident reported on Highway 101</span>
-                    <span class="text-gray-800 dark:text-gray-200 mx-4">Alert: Suspicious activity detected in CCTV feed #7</span>
-                </div>
-            </div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+            <h3 class="text-lg font-semibold mb-2 dark:text-white">Average Response Time</h3>
+            <p class="text-3xl font-bold text-primary">8.5 min</p>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+            <h3 class="text-lg font-semibold mb-2 dark:text-white">Case Clearance Rate</h3>
+            <p class="text-3xl font-bold text-primary">68%</p>
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-           
-            
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
+        <!-- Crime Trend Chart -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+            <h3 class="text-lg font-semibold mb-2 dark:text-white">Crime Trend (Last 12 Months)</h3>
+            <canvas id="crimeTrendChart"></canvas>
+        </div>
+        <!-- Incident Types Pie Chart -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+            <h3 class="text-lg font-semibold mb-2 dark:text-white">Incident Types Distribution</h3>
+            <canvas id="incidentTypesChart"></canvas>
+        </div>
+    </div>
 
-            // Initial margin
-            updateMainContentMargin();
-
-            sidebarToggle.addEventListener('click', function() {
-                sidebar.classList.toggle('collapsed');
-                sidebar.classList.toggle('expanded');
-                updateMainContentMargin();
-            });
-
-            // Dark mode toggle
-            darkModeToggle.addEventListener('click', function() {
-                document.documentElement.classList.toggle('dark');
-                const isDarkMode = document.documentElement.classList.contains('dark');
-                localStorage.setItem('darkMode', isDarkMode);
-                darkModeToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-                updateChartStyles();
-            });
-
-            // Check for saved dark mode preference
-            if (localStorage.getItem('darkMode') === 'true') {
-                document.documentElement.classList.add('dark');
-                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-            }
-
-            function updateChartStyles() {
-                const isDarkMode = document.documentElement.classList.contains('dark');
-                const textColor = isDarkMode ? '#ffffff' : '#666666';
-                
-                Chart.defaults.color = textColor;
-                Chart.defaults.borderColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
-                
-                if (window.crimeTrendChart) {
-                    window.crimeTrendChart.update();
-                }
-                if (window.incidentTypesChart) {
-                    window.incidentTypesChart.update();
-                }
-            }
-
-            // Crime Trend Chart
-            const crimeTrendCtx = document.getElementById('crimeTrendChart').getContext('2d');
-            window.crimeTrendChart = new Chart(crimeTrendCtx, {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                    datasets: [{
-                        label: 'Incidents',
-                        data: [65, 59, 80, 81, 56, 55, 40, 45, 50, 62, 74, 78],
-                        borderColor: '#1e40af',
-                        tension: 0.1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-
-            // Incident Types Pie Chart
-            const incidentTypesCtx = document.getElementById('incidentTypesChart').getContext('2d');
-            window.incidentTypesChart = new Chart(incidentTypesCtx, {
-                type: 'pie',
-                data: {
-                    labels: ['Theft', 'Assault', 'Burglary', 'Vandalism', 'Other'],
-                    datasets: [{
-                        data: [30, 20, 25, 15, 10],
-                        backgroundColor: ['#1e40af', '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
-            });
-
-            updateChartStyles();
-        });
-    </script>
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-8">
+        <h3 class="text-lg font-semibold mb-2 dark:text-white">Top 5 High-Crime Areas</h3>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-900">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Area</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Incidents</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Change</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Downtown</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">245</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">+5%</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Central Park</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">198</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">-2%</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Westside</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">176</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">+8%</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Northend</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">154</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">-3%</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Eastside</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">132</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">+1%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        
+        function updateMainContentMargin() {
+            if (sidebar.classList.contains('collapsed')) {
+                mainContent.style.marginLeft = '64px';
+            } else {
+                mainContent.style.marginLeft = '250px';
+            }
+        }
+
+        // Initial margin
+        updateMainContentMargin();
+
+        sidebarToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('collapsed');
+            sidebar.classList.toggle('expanded');
+            updateMainContentMargin();
+        });
+
+        // Dark mode toggle
+        darkModeToggle.addEventListener('click', function() {
+            document.documentElement.classList.toggle('dark');
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            localStorage.setItem('darkMode', isDarkMode);
+            darkModeToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            updateChartStyles();
+        });
+
+        // Check for saved dark mode preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.documentElement.classList.add('dark');
+            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+
+        function updateChartStyles() {
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            const textColor = isDarkMode ? '#ffffff' : '#666666';
+            
+            Chart.defaults.color = textColor;
+            Chart.defaults.borderColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            
+            if (window.crimeTrendChart) {
+                window.crimeTrendChart.update();
+            }
+            if (window.incidentTypesChart) {
+                window.incidentTypesChart.update();
+            }
+        }
+
+        // Crime Trend Chart
+        const crimeTrendCtx = document.getElementById('crimeTrendChart').getContext('2d');
+        window.crimeTrendChart = new Chart(crimeTrendCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Incidents',
+                    data: [65, 59, 80, 81, 56, 55, 40, 45, 50, 62, 74, 78],
+                    borderColor: '#1e40af',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Incident Types Pie Chart
+        const incidentTypesCtx = document.getElementById('incidentTypesChart').getContext('2d');
+        window.incidentTypesChart = new Chart(incidentTypesCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Theft', 'Assault', 'Burglary', 'Vandalism', 'Other'],
+                datasets: [{
+                    data: [30, 20, 25, 15, 10],
+                    backgroundColor: ['#1e40af', '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        updateChartStyles();
+    });
+</script>
+{% endblock %}
