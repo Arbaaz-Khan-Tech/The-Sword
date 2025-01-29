@@ -1,0 +1,267 @@
+{% extends "base.html" %}
+
+{% block title %}Community Guardians Program - Suraksha Setu{% endblock %}
+
+{% block content %}
+<div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-6">
+    <h1 class="text-3xl font-bold mb-4 text-gray-800 dark:text-white">Community Guardians Program</h1>
+    <p class="text-gray-600 dark:text-gray-300 mb-4">Join our network of proactive citizens and help make your community safer!</p>
+    
+    <!-- Guardian Level and Points -->
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-200">Guardian Level: <span id="guardianLevel" class="text-primary">Novice</span></h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Keep participating to level up!</p>
+        </div>
+        <div class="text-right">
+            <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-200">Points: <span id="guardianPoints" class="text-primary">150</span></h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Earn more to unlock rewards!</p>
+        </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="mb-6">
+        <h3 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-200">Overall Progress</h3>
+        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+            <div class="bg-primary h-2.5 rounded-full" style="width: 45%"></div>
+        </div>
+        <div class="flex justify-between mt-2">
+            <span class="text-xs text-gray-500 dark:text-gray-400">Current: 450 XP</span>
+            <span class="text-xs text-gray-500 dark:text-gray-400">Next Level: 1000 XP</span>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-2 gap-4 mb-6">
+        <button id="startPatrol" class="bg-primary text-white py-3 px-4 rounded-lg hover:bg-orange-600 transition-colors">
+            <i class="fas fa-map-marker-alt mr-2"></i> Start Patrol
+        </button>
+        <a href="/citizen/incident-report" style="all: unset;">  <button id="reportIncident" class="bg-green-500 text-white py-3 px-4 rounded-lg hover:bg-green-600 transition-colors">
+            <i class="fas fa-flag mr-2"></i> Report Incident
+        </button> </a> 
+    </div>
+
+    <!-- Training Modules -->
+    <div class="mb-6">
+        <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">Training Modules</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg" data-module-id="conflict-deescalation">
+                <h3 class="font-semibold mb-2 text-gray-700 dark:text-gray-200">Conflict De-escalation</h3>
+                <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-600 mb-2">
+                    <div class="bg-primary h-2.5 rounded-full" style="width: 40%"></div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-500 dark:text-gray-400 progress-text">Progress: 2/5</span>
+                    <button class="text-primary hover:underline continue-button">Continue</button>
+                </div>
+            </div>
+            <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg" data-module-id="emergency-reporting">
+                <h3 class="font-semibold mb-2 text-gray-700 dark:text-gray-200">Emergency Reporting</h3>
+                <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-600 mb-2">
+                    <div class="bg-primary h-2.5 rounded-full" style="width: 60%"></div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-500 dark:text-gray-400 progress-text">Progress: 3/5</span>
+                    <button class="text-primary hover:underline continue-button">Continue</button>
+                </div>
+            </div>
+            <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg" data-module-id="first-aid">
+                <h3 class="font-semibold mb-2 text-gray-700 dark:text-gray-200">First Aid Basics</h3>
+                <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-600 mb-2">
+                    <div class="bg-primary h-2.5 rounded-full" style="width: 20%"></div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-500 dark:text-gray-400 progress-text">Progress: 1/5</span>
+                    <button class="text-primary hover:underline continue-button">Start</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Challenges and Missions -->
+    <div class="mb-6">
+        <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">Challenges and Missions</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
+                <h3 class="font-semibold mb-2 text-gray-700 dark:text-gray-200">Night Patrol Challenge</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Complete 5 night patrols this week</p>
+                <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-600">
+                    <div class="bg-primary h-2.5 rounded-full" style="width: 60%"></div>
+                </div>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Progress: 3/5</p>
+            </div>
+            <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
+                <h3 class="font-semibold mb-2 text-gray-700 dark:text-gray-200">Community Outreach Mission</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Organize a safety awareness event</p>
+                <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-600">
+                    <div class="bg-primary h-2.5 rounded-full" style="width: 30%"></div>
+                </div>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Progress: Planning phase</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Patrol Map -->
+    <div class="mb-6">
+        <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">Patrol Map</h2>
+        <div class="bg-gray-200 dark:bg-gray-700 h-64 rounded-lg flex items-center justify-center relative overflow-hidden">
+            <img src="https://www.mapsofindia.com/maps/maharashtra/pune-city-map.jpg" alt="Pune City Map" class="absolute inset-0 w-full h-full object-cover opacity-100">
+           
+        </div>
+    </div>
+
+    <!-- Leaderboard -->
+    <div class="mb-6">
+        <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">Leaderboard</h2>
+        <div class="bg-white dark:bg-gray-700 rounded-lg shadow overflow-hidden">
+            <table class="min-w-full">
+                <thead class="bg-gray-100 dark:bg-gray-600">
+                    <tr>
+                        <th class="py-2 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Rank</th>
+                        <th class="py-2 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Guardian</th>
+                        <th class="py-2 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Points</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-500">
+                    <tr class="bg-yellow-50 dark:bg-yellow-900">
+                        <td class="py-2 px-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">1</td>
+                        <td class="py-2 px-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">Rahul S.</td>
+                        <td class="py-2 px-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">2500</td>
+                    </tr>
+                    <tr class="bg-gray-50 dark:bg-gray-800">
+                        <td class="py-2 px-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">2</td>
+                        <td class="py-2 px-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">Priya M.</td>
+                        <td class="py-2 px-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">2350</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 px-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">3</td>
+                        <td class="py-2 px-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">Amit K.</td>
+                        <td class="py-2 px-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">2200</td>
+                    </tr>
+                    <tr class="bg-gray-50 dark:bg-gray-800">
+                        <td class="py-2 px-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">4</td>
+                        <td class="py-2 px-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">Sneha P.</td>
+                        <td class="py-2 px-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">2100</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 px-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">5</td>
+                        <td class="py-2 px-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">Vikram D.</td>
+                        <td class="py-2 px-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">2050</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Achievements and Rewards -->
+    <div>
+        <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">Achievements & Rewards</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="text-center">
+                <div class="bg-yellow-100 dark:bg-yellow-900 rounded-full p-4 mb-2 inline-block">
+                    <i class="fas fa-medal text-yellow-500 text-3xl"></i>
+                </div>
+                <p class="text-sm font-semibold text-gray-700 dark:text-gray-200">Night Patrol Hero</p>
+            </div>
+            <div class="text-center">
+                <div class="bg-blue-100 dark:bg-blue-900 rounded-full p-4 mb-2 inline-block">
+                    <i class="fas fa-tachometer-alt text-blue-500 text-3xl"></i>
+                </div>
+                <p class="text-sm font-semibold text-gray-700 dark:text-gray-200">Quick Responder</p>
+            </div>
+            <div class="text-center">
+                <div class="bg-green-100 dark:bg-green-900 rounded-full p-4 mb-2 inline-block">
+                    <i class="fas fa-users text-green-500 text-3xl"></i>
+                </div>
+                <p class="text-sm font-semibold text-gray-700 dark:text-gray-200">Community Leader</p>
+            </div>
+            <div class="text-center">
+                <div class="bg-purple-100 dark:bg-purple-900 rounded-full p-4 mb-2 inline-block">
+                    <i class="fas fa-book text-purple-500 text-3xl"></i>
+                </div>
+                <p class="text-sm font-semibold text-gray-700 dark:text-gray-200">Training Expert</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Patrol Map Initialization (placeholder)
+  function initPatrolMap() {
+    // This would be replaced with actual map initialization code for Pune
+    console.log("Pune patrol map initialized")
+  }
+
+  // Training Module Progress
+  function updateTrainingProgress(moduleId, progress, total) {
+    const module = document.querySelector(`[data-module-id="${moduleId}"]`)
+    if (module) {
+      const progressText = module.querySelector(".progress-text")
+      const continueButton = module.querySelector(".continue-button")
+      const progressBar = module.querySelector(".bg-primary")
+
+      progressText.textContent = `Progress: ${progress}/${total}`
+      progressBar.style.width = `${(progress / total) * 100}%`
+
+      if (progress === total) {
+        continueButton.textContent = "Completed"
+        continueButton.disabled = true
+      } else {
+        continueButton.textContent = progress === 0 ? "Start" : "Continue"
+      }
+    }
+  }
+
+  // Guardian Level and Points Update
+  function updateGuardianStats(level, points) {
+    document.getElementById("guardianLevel").textContent = level
+    document.getElementById("guardianPoints").textContent = points
+  }
+
+  // Update Overall Progress
+  function updateOverallProgress(currentXP, nextLevelXP) {
+    const progressBar = document.querySelector(".bg-primary")
+    const currentXPSpan = document.querySelector(".text-xs:first-child")
+    const nextLevelXPSpan = document.querySelector(".text-xs:last-child")
+
+    const progressPercentage = (currentXP / nextLevelXP) * 100
+    progressBar.style.width = `${progressPercentage}%`
+    currentXPSpan.textContent = `Current: ${currentXP} XP`
+    nextLevelXPSpan.textContent = `Next Level: ${nextLevelXP} XP`
+  }
+
+  // Initialize components
+  initPatrolMap()
+  updateTrainingProgress("conflict-deescalation", 2, 5)
+  updateTrainingProgress("emergency-reporting", 3, 5)
+  updateTrainingProgress("first-aid", 1, 5)
+  updateGuardianStats("Novice", 150)
+  updateOverallProgress(450, 1000)
+
+  // Event listeners for buttons
+  document.getElementById("startPatrol").addEventListener("click", () => {
+    alert("Starting patrol mode in Pune...")
+    // Here you would implement the logic to start the patrol mode
+  })
+
+  document.getElementById("reportIncident").addEventListener("click", () => {
+    alert("Opening incident report form...")
+    // Here you would implement the logic to open the incident report form
+  })
+
+  // Simulating progress updates (for demonstration purposes)
+  setInterval(() => {
+    const currentPoints = Number.parseInt(document.getElementById("guardianPoints").textContent)
+    updateGuardianStats("Novice", currentPoints + 10)
+    updateOverallProgress(450 + Math.floor(Math.random() * 50), 1000)
+  }, 5000)
+})
+
+
+
+
+    </script>
+{% endblock %}
+
