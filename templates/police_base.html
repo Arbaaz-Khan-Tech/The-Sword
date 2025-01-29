@@ -7,6 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shepherd.js@10.0.1/dist/css/shepherd.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/shepherd.js@10.0.1/dist/js/shepherd.min.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -55,6 +57,40 @@
             max-width: 90%;
             max-height: 90%;
             object-fit: contain;
+        }
+        
+        /* Custom styles for tour */
+        .shepherd-button {
+            @apply px-4 py-2 rounded-lg transition-colors duration-200;
+        }
+        
+        .shepherd-button-primary {
+            @apply bg-primary text-white hover:bg-blue-700;
+        }
+        
+        .shepherd-button-secondary {
+            @apply bg-gray-500 text-white hover:bg-gray-600;
+        }
+        
+        .shepherd-text {
+            @apply text-lg;
+        }
+        
+        .shepherd-title {
+            @apply text-2xl font-bold mb-4;
+        }
+
+        /* Language selector styling */
+        .language-btn {
+            @apply px-6 py-3 text-lg font-semibold rounded-xl transform transition-all duration-200 hover:scale-105;
+        }
+
+        .language-btn-en {
+            @apply bg-gradient-to-r from-blue-500 to-blue-700 text-white;
+        }
+
+        .language-btn-hi {
+            @apply bg-gradient-to-r from-orange-500 to-orange-700 text-white;
         }
     </style>
       {% block extra_head %}{% endblock %}
@@ -145,65 +181,236 @@
             </div>
             </main>
 
+    <!-- Add this after the navigation bar -->
+    <div id="languageSelector" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl z-50 hidden">
+        <h2 class="text-2xl font-bold mb-6 text-center dark:text-white">
+            Welcome to Police Dashboard<br>
+            <span class="text-primary">पुलिस डैशबोर्ड में आपका स्वागत है</span>
+        </h2>
+        <p class="text-gray-600 dark:text-gray-300 mb-6 text-center">Please select your preferred language<br>कृपया अपनी पसंदीदा भाषा चुनें</p>
+        <div class="flex space-x-6 justify-center">
+            <button onclick="startTour('en')" class="language-btn language-btn-en">
+                <i class="fas fa-globe mr-2"></i>English
+            </button>
+            <button onclick="startTour('hi')" class="language-btn language-btn-hi">
+                <i class="fas fa-globe mr-2"></i>हिंदी
+            </button>
+        </div>
+    </div>
 
-
-
-
-
-
-
-
-
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    const sidebar = document.getElementById('sidebar');
-                    const mainContent = document.getElementById('mainContent');
-                    const sidebarToggle = document.getElementById('sidebarToggle');
-                    const darkModeToggle = document.getElementById('darkModeToggle');
-                    const feedOverlay = document.getElementById('feedOverlay');
-                    const enlargedFeed = document.getElementById('enlargedFeed');
-                    const feedImages = document.querySelectorAll('.feed-image');
-                    
-                    function updateMainContentMargin() {
-                        if (sidebar.classList.contains('collapsed')) {
-                            mainContent.style.marginLeft = '64px';
-                        } else {
-                            mainContent.style.marginLeft = '250px';
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const feedOverlay = document.getElementById('feedOverlay');
+            const enlargedFeed = document.getElementById('enlargedFeed');
+            const feedImages = document.querySelectorAll('.feed-image');
+            
+            function updateMainContentMargin() {
+                if (sidebar.classList.contains('collapsed')) {
+                    mainContent.style.marginLeft = '64px';
+                } else {
+                    mainContent.style.marginLeft = '250px';
+                }
+            }
+    
+            // Initial margin
+            updateMainContentMargin();
+    
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('collapsed');
+                sidebar.classList.toggle('expanded');
+                updateMainContentMargin();
+            });
+    
+            // Dark mode toggle
+            darkModeToggle.addEventListener('click', function() {
+                document.documentElement.classList.toggle('dark');
+                const isDarkMode = document.documentElement.classList.contains('dark');
+                localStorage.setItem('darkMode', isDarkMode);
+                darkModeToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            });
+    
+            // Check for saved dark mode preference
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.documentElement.classList.add('dark');
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+    
+            // Tutorial Tour Setup
+            function setupTour(language) {
+                const tourContent = {
+                    en: {
+                        welcome: {
+                            title: 'Welcome to Police Dashboard',
+                            text: 'Let us guide you through the key features of your dashboard.'
+                        },
+                        cctv: {
+                            title: 'CCTV Monitoring',
+                            text: 'Access real-time CCTV feeds from different locations to monitor activities.'
+                        },
+                        heatmap: {
+                            title: 'Crime Heatmap',
+                            text: 'Visualize crime hotspots and patterns in your jurisdiction area.'
+                        },
+                        sos: {
+                            title: 'SOS Notifications',
+                            text: 'Receive and respond to emergency SOS alerts from citizens.'
+                        },
+                        incidents: {
+                            title: 'Incident Management',
+                            text: 'Track and manage reported incidents in your area.'
+                        },
+                        database: {
+                            title: 'Offender Database',
+                            text: 'Access and manage criminal records and offender information.'
+                        },
+                        verify: {
+                            title: 'Report Verification',
+                            text: 'Verify and validate incident reports submitted by citizens.'
+                        },
+                        broadcast: {
+                            title: 'Alert Broadcasting',
+                            text: 'Send important alerts and notifications to citizens in your jurisdiction.'
+                        }
+                    },
+                    hi: {
+                        welcome: {
+                            title: 'पुलिस डैशबोर्ड में आपका स्वागत है',
+                            text: 'आइए आपको डैशबोर्ड की प्रमुख सुविधाओं से परिचित कराएं।'
+                        },
+                        cctv: {
+                            title: 'सीसीटीवी निगरानी',
+                            text: 'विभिन्न स्थानों से रीयल-टाइम सीसीटीवी फीड देखें।'
+                        },
+                        heatmap: {
+                            title: 'अपराध हीटमैप',
+                            text: 'अपने क्षेत्र में अपराध के हॉटस्पॉट और पैटर्न देखें।'
+                        },
+                        sos: {
+                            title: 'आपातकालीन सूचनाएं',
+                            text: 'नागरिकों से आपातकालीन अलर्ट प्राप्त करें और प्रतिक्रिया दें।'
+                        },
+                        incidents: {
+                            title: 'घटना प्रबंधन',
+                            text: 'अपने क्षेत्र में रिपोर्ट की गई घटनाओं को ट्रैक करें।'
+                        },
+                        database: {
+                            title: 'अपराधी डेटाबेस',
+                            text: 'आपराधिक रिकॉर्ड और अपराधी की जानकारी देखें।'
+                        },
+                        verify: {
+                            title: 'रिपोर्ट सत्यापन',
+                            text: 'नागरिकों द्वारा भेजी गई रिपोर्ट का सत्यापन करें।'
+                        },
+                        broadcast: {
+                            title: 'अलर्ट प्रसारण',
+                            text: 'अपने क्षेत्र के नागरिकों को महत्वपूर्ण सूचनाएं भेजें।'
                         }
                     }
-        
-                    // Initial margin
-                    updateMainContentMargin();
-        
-                    sidebarToggle.addEventListener('click', function() {
-                        sidebar.classList.toggle('collapsed');
-                        sidebar.classList.toggle('expanded');
-                        updateMainContentMargin();
-                    });
-        
-                    // Dark mode toggle
-                    darkModeToggle.addEventListener('click', function() {
-                        document.documentElement.classList.toggle('dark');
-                        const isDarkMode = document.documentElement.classList.contains('dark');
-                        localStorage.setItem('darkMode', isDarkMode);
-                        darkModeToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-                    });
-        
-                    // Check for saved dark mode preference
-                    if (localStorage.getItem('darkMode') === 'true') {
-                        document.documentElement.classList.add('dark');
-                        darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                };
+
+                const content = tourContent[language];
+
+                const tour = new Shepherd.Tour({
+                    useModalOverlay: true,
+                    defaultStepOptions: {
+                        classes: 'shadow-xl rounded-xl',
+                        scrollTo: true,
+                        cancelIcon: {
+                            enabled: true
+                        }
                     }
-        
                 });
-        
-    
-        
-           
-         
-        </script>
-        
-        
-        </body>
-        </html>
+
+                // Welcome step
+                tour.addStep({
+                    id: 'welcome',
+                    title: content.welcome.title,
+                    text: content.welcome.text,
+                    attachTo: {
+                        element: '.sidebar',
+                        on: 'right'
+                    },
+                    buttons: [
+                        {
+                            text: language === 'en' ? 'Skip Tour' : 'टूर छोड़ें',
+                            action: () => tour.complete(),
+                            classes: 'shepherd-button-secondary'
+                        },
+                        {
+                            text: language === 'en' ? 'Next' : 'आगे',
+                            action: () => tour.next(),
+                            classes: 'shepherd-button-primary'
+                        }
+                    ]
+                });
+
+                // Add steps for each feature
+                const features = [
+                    { id: 'cctv', path: '/police/cctv-feeds' },
+                    { id: 'heatmap', path: '/police/crime-heatmap' },
+                    { id: 'sos', path: '/police/sos-notifications' },
+                    { id: 'incidents', path: '/police/incident-alerts' },
+                    { id: 'database', path: '/police/offender-database' },
+                    { id: 'verify', path: '/police/incident-verify' },
+                    { id: 'broadcast', path: '/police/Broadcast_Alert' }
+                ];
+
+                features.forEach((feature) => {
+                    tour.addStep({
+                        id: feature.id,
+                        title: content[feature.id].title,
+                        text: content[feature.id].text,
+                        attachTo: {
+                            element: `a[href="${feature.path}"]`,
+                            on: 'right'
+                        },
+                        buttons: [
+                            {
+                                text: language === 'en' ? 'Back' : 'पीछे',
+                                action: () => tour.back(),
+                                classes: 'shepherd-button-secondary'
+                            },
+                            {
+                                text: feature.id === 'broadcast' ? 
+                                    (language === 'en' ? 'Finish' : 'समाप्त') : 
+                                    (language === 'en' ? 'Next' : 'आगे'),
+                                action: feature.id === 'broadcast' ? 
+                                    () => tour.complete() : 
+                                    () => tour.next(),
+                                classes: 'shepherd-button-primary'
+                            }
+                        ]
+                    });
+                });
+
+                tour.start();
+                localStorage.setItem('policeTourCompleted', 'true');
+            }
+
+            // Function to show language selector
+            function showLanguageSelector() {
+                document.getElementById('languageSelector').classList.remove('hidden');
+            }
+
+            // Function to start tour with selected language
+            window.startTour = function(language) {
+                document.getElementById('languageSelector').classList.add('hidden');
+                // Add a small delay to ensure DOM is ready
+                setTimeout(() => {
+                    setupTour(language);
+                }, 100);
+            }
+
+            // Check if this is user's first visit
+            if (!localStorage.getItem('policeTourCompleted')) {
+                showLanguageSelector();
+            }
+        });
+    </script>
+</body>
+</html>
         

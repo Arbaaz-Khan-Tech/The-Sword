@@ -36,6 +36,9 @@
             display: none;
         }
     </style>
+    <!-- Add Shepherd.js CSS and JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shepherd.js@10.0.1/dist/css/shepherd.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/shepherd.js@10.0.1/dist/js/shepherd.min.js"></script>
     {% block extra_head %}{% endblock %}
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-200">
@@ -67,6 +70,15 @@
             </div>
         </div>
     </nav>
+
+    <!-- Add this after the top navigation bar and before the sidebar -->
+    <div id="languageSelector" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl z-50 hidden">
+        <h2 class="text-xl font-bold mb-4 text-center dark:text-white">Select Language / भाषा चुनें</h2>
+        <div class="flex space-x-4">
+            <button onclick="startTour('en')" class="px-4 py-2 bg-primary text-white rounded hover:bg-orange-700 transition-colors">English</button>
+            <button onclick="startTour('hi')" class="px-4 py-2 bg-primary text-white rounded hover:bg-orange-700 transition-colors">हिंदी</button>
+        </div>
+    </div>
 
     <!-- Sidebar -->
     <div id="sidebar" class="sidebar expanded fixed left-0 top-16 h-screen bg-white dark:bg-gray-800 shadow-lg z-40 transition-colors duration-200">
@@ -147,6 +159,160 @@
             if (localStorage.getItem('darkMode') === 'true') {
                 document.documentElement.classList.add('dark');
                 darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+
+            // Tutorial Tour Setup
+            function setupTour(language) {
+                const tourContent = {
+                    en: {
+                        welcome: 'Welcome to Suraksha Setu! Let\'s explore all the features.',
+                        skip: 'Skip',
+                        next: 'Next',
+                        back: 'Back',
+                        finish: 'Finish',
+                        sos: 'Use the SOS button for immediate help in emergency situations.',
+                        incident: 'Click here to report any incident.',
+                        realtime: 'View nearby incidents on the real-time map.',
+                        geofencing: 'Set safe zones and receive alerts.',
+                        alerts: 'Get important alerts and notifications.'
+                    },
+                    hi: {
+                        welcome: 'सुरक्षा सेतु में आपका स्वागत है! आइए सभी सुविधाओं का पता लगाएं।',
+                        skip: 'स्किप करें',
+                        next: 'आगे बढ़ें',
+                        back: 'पीछे',
+                        finish: 'समाप्त',
+                        sos: 'आपातकालीन स्थिति में तुरंत मदद के लिए SOS बटन का उपयोग करें।',
+                        incident: 'किसी घटना की रिपोर्ट करने के लिए यहाँ क्लिक करें।',
+                        realtime: 'रीयल-टाइम मैप पर आस-पास की घटनाओं को देखें।',
+                        geofencing: 'सुरक्षित क्षेत्र सेट करें और अलर्ट प्राप्त करें।',
+                        alerts: 'महत्वपूर्ण अलर्ट और सूचनाएं प्राप्त करें।'
+                    }
+                };
+
+                const content = tourContent[language];
+
+                const tour = new Shepherd.Tour({
+                    useModalOverlay: true,
+                    defaultStepOptions: {
+                        classes: 'shadow-md bg-white dark:bg-gray-800 dark:text-white',
+                        scrollTo: true
+                    }
+                });
+
+                tour.addStep({
+                    id: 'welcome',
+                    text: content.welcome,
+                    attachTo: {
+                        element: '.sidebar',
+                        on: 'right'
+                    },
+                    buttons: [
+                        {
+                            text: content.skip,
+                            action: tour.complete
+                        },
+                        {
+                            text: content.next,
+                            action: tour.next
+                        }
+                    ]
+                });
+
+                tour.addStep({
+                    id: 'sos',
+                    text: content.sos,
+                    attachTo: {
+                        element: 'a[href="/citizen/sos"]',
+                        on: 'right'
+                    },
+                    buttons: [
+                        {
+                            text: content.back,
+                            action: tour.back
+                        },
+                        {
+                            text: content.next,
+                            action: tour.next
+                        }
+                    ]
+                });
+
+                tour.addStep({
+                    id: 'incident-report',
+                    text: content.incident,
+                    attachTo: {
+                        element: 'a[href="/citizen/incident-report"]',
+                        on: 'right'
+                    },
+                    buttons: [
+                        {
+                            text: content.back,
+                            action: tour.back
+                        },
+                        {
+                            text: content.next,
+                            action: tour.next
+                        }
+                    ]
+                });
+
+                tour.addStep({
+                    id: 'real-time-map',
+                    text: content.realtime,
+                    attachTo: {
+                        element: 'a[href="/citizen/real-time-map"]',
+                        on: 'right'
+                    },
+                    buttons: [
+                        {
+                            text: content.back,
+                            action: tour.back
+                        },
+                        {
+                            text: content.next,
+                            action: tour.next
+                        }
+                    ]
+                });
+
+                tour.addStep({
+                    id: 'geofencing',
+                    text: content.geofencing,
+                    attachTo: {
+                        element: 'a[href="/citizen/geofencing"]',
+                        on: 'right'
+                    },
+                    buttons: [
+                        {
+                            text: content.back,
+                            action: tour.back
+                        },
+                        {
+                            text: content.finish,
+                            action: tour.complete
+                        }
+                    ]
+                });
+
+                tour.start();
+                localStorage.setItem('tourCompleted', 'true');
+            }
+
+            // Function to show language selector
+            function showLanguageSelector() {
+                document.getElementById('languageSelector').classList.remove('hidden');
+            }
+
+            // Function to start tour with selected language
+            window.startTour = function(language) {
+                document.getElementById('languageSelector').classList.add('hidden');
+                setupTour(language);
+            }
+
+            // Check if this is user's first visit
+            if (!localStorage.getItem('tourCompleted')) {
+                showLanguageSelector();
             }
         });
     </script>
