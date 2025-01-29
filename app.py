@@ -117,6 +117,7 @@ alerts_collection = db["Alerts_Citizen"]  # For citizen-submitted reports jaha v
 incidents_collection = db["Incidents"]  # For police-submitted reports
 Alert_Collection = db["Alerts"]
 markers_collection = db["Markers"]
+heatmap_collection = db["Heatmap"]
 
 
 
@@ -231,6 +232,18 @@ def citizen_safewalk():
 def citizen_sos():
     return render_template("Citizen/sos.html")
 
+@app.route("/citizen/crime-heatmap")
+def citizen_crime_heatmap():
+    return render_template("Citizen/crime-heatmap.html")
+
+@app.route("/api/crime-data")
+def get_crime_data():
+    return jsonify(list(db.heatmap.find({}, {"_id": 0})))
+
+@app.route("/api/report-crime", methods=["POST"])
+def report_crime():
+    db.heatmap.insert_one(request.json)
+    return jsonify({"message": "Crime location saved!"})
 
 @app.route("/Citizen")
 def citizen_Index():
@@ -244,6 +257,10 @@ def police_index():
 @app.route("/police/cctv-feeds")
 def police_cctv_feeds():
     return render_template("Police/cctv-feeds.html")
+
+@app.route("/police/crime-locator")
+def police_crime_locator():
+    return render_template("Police/crime-locator.html")
 
 @app.route("/police/crime-heatmap")
 def police_crime_heatmap():
