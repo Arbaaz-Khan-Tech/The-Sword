@@ -126,6 +126,9 @@ heatmap_collection = db["Heatmap"]
 def index():
     return render_template('/Police/Login.html')
 
+@app.route("/citizen/rewards")
+def citizen_community_engagement():
+    return render_template("Citizen/rewards.html")
 
 
 @app.route("/citizen/geofencing")
