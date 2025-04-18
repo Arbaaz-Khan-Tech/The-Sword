@@ -120,12 +120,10 @@ input {
 input:focus {
   outline: none;
   border-color: transparent;
-  ring: 2px solid #2563eb;
   box-shadow: 0 0 0 2px #2563eb, 0 0 0 4px rgba(37, 99, 235, 0.1);
 }
 
 .citizen input:focus {
-  ring: 2px solid #16a34a;
   box-shadow: 0 0 0 2px #16a34a, 0 0 0 4px rgba(22, 163, 74, 0.1);
 }
 
@@ -181,7 +179,7 @@ input:focus {
     padding: 1.5rem;
   }
 }
-    </style>
+  </style>
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
@@ -200,29 +198,17 @@ input:focus {
       </div>
 
       <!-- Forms -->
-      <form id="loginForm"  class="login-form">
+      <form id="loginForm" class="login-form">
         <h2 id="formTitle">Police Login</h2>
 
         <div class="input-group">
           <i data-lucide="shield" class="input-icon"></i>
-          <input 
-            type="text" 
-            id="username" 
-            name="username" 
-            placeholder="Police ID" 
-          
-          >
+          <input type="text" id="username" name="username" placeholder="Police ID">
         </div>
 
         <div class="input-group">
           <i data-lucide="lock" class="input-icon"></i>
-          <input 
-            type="password" 
-            id="password" 
-            name="password" 
-            placeholder="Password" 
-           
-          >
+          <input type="password" id="password" name="password" placeholder="Password">
         </div>
 
         <button type="submit" class="submit-btn">Sign In</button>
@@ -234,71 +220,40 @@ input:focus {
     </div>
   </div>
 
-  <script >
+  <script>
     document.addEventListener('DOMContentLoaded', () => {
-  // Initialize Lucide icons
-  lucide.createIcons();
+      lucide.createIcons();
 
-  const tabBtns = document.querySelectorAll('.tab-btn');
-  const loginForm = document.getElementById('loginForm');
-  const formTitle = document.getElementById('formTitle');
-  const usernameInput = document.getElementById('username');
-  const body = document.body;
+      const tabBtns = document.querySelectorAll('.tab-btn');
+      const loginForm = document.getElementById('loginForm');
+      const formTitle = document.getElementById('formTitle');
+      const usernameInput = document.getElementById('username');
+      const body = document.body;
 
-  // Tab switching logic
-  tabBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const role = btn.dataset.role;
-      
-      // Update active tab
-      tabBtns.forEach(b => {
-        b.classList.remove('active', 'citizen');
-        if (b === btn) {
-          b.classList.add('active');
-          if (role === 'citizen') {
-            b.classList.add('citizen');
-          }
-        }
+      let currentRole = "police"; 
+
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentRole = btn.dataset.role;
+
+          tabBtns.forEach(b => b.classList.remove('active', 'citizen'));
+          btn.classList.add('active', currentRole === 'citizen' ? 'citizen' : '');
+
+          body.className = currentRole;
+          formTitle.textContent = currentRole === "police" ? "Police Login" : "Citizen Login";
+          usernameInput.placeholder = currentRole === "police" ? "Police ID" : "Username";
+
+          loginForm.reset();
+        });
       });
 
-      // Update form for selected role
-      if (role === 'police') {
-        body.classList.remove('citizen');
-        formTitle.textContent = 'Police Login';
-        usernameInput.placeholder = 'Police ID';
-        loginForm.addEventListener('submit', (e) => {
-          e.preventDefault();
-          window.location.replace("http://localhost:5000/police");
-        
-        });
-      } else {
-        body.classList.add('citizen');
-        formTitle.textContent = 'Citizen Login';
-        usernameInput.placeholder = 'Username';
-        loginForm.addEventListener('submit', (e) => {
-          e.preventDefault();
-          window.location.replace("http://localhost:5000/Citizen");
-        
-        });
-      }
-
-      // Clear form
-      loginForm.reset();
+      loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        window.location.replace(
+          "http://localhost:5000/Citizen"
+          );
+      });
     });
-  });
-
-  // Form submission
-  loginForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const formData = new FormData(loginForm);
-    const data = Object.fromEntries(formData.entries());
-    console.log('Form submitted:', data);
-    
-    
-    // Add your login logic here
-  });
-});
-
   </script>
 </body>
 </html>
