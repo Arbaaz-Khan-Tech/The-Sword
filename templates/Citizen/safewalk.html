@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -14,13 +14,13 @@
     <div class="flex h-screen">
         <!-- Left Panel -->
         <div class="w-96 p-6 bg-white shadow-lg overflow-y-auto">
-            <h1 class="text-2xl font-bold text-blue-600 mb-4">Suraksha Setu</h1>
+            <h1 class="text-2xl font-bold text-blue-600 mb-4">Safe Walk</h1>
 
             <!-- Guardians Section -->
             <div class="mb-6">
-                <h2 class="text-xl font-semibold mb-3">Guardians</h2>
+                <h2 class="text-xl font-semibold mb-3">Guardians Phone number</h2>
                 <div class="flex items-center mb-4">
-                    <input type="tel" id="guardianPhone" class="border border-gray-300 rounded-md p-2 flex-1" placeholder="Guardian's Phone Number">
+                    <input type="tel" id="guardianPhone" class="border border-gray-300 rounded-md p-2 flex-1" placeholder="Guardian's Phone Number ">
                     <button onclick="addGuardian()" class="ml-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Add</button>
                 </div>
                 <div id="guardiansList" class="space-y-2"></div>
@@ -30,19 +30,19 @@
             <div class="mb-6">
                 <h2 class="text-xl font-semibold mb-3">Journey Details</h2>
                 <div class="grid grid-cols-2 gap-4 mb-4">
-                    <button onclick="selectTransport('walking')" class="flex flex-col items-center p-4 border rounded-md hover:bg-blue-50" data-icon="🚶">
+                    <button onclick="selectTransport('walking')" class="transport-btn flex flex-col items-center p-4 border rounded-md hover:bg-blue-100 transition" data-icon="🚶">
                         <span class="text-2xl">🚶</span>
                         <span class="mt-1 text-sm">Walking</span>
                     </button>
-                    <button onclick="selectTransport('car')" class="flex flex-col items-center p-4 border rounded-md hover:bg-blue-50" data-icon="🚗">
+                    <button onclick="selectTransport('car')" class="transport-btn flex flex-col items-center p-4 border rounded-md hover:bg-blue-100 transition" data-icon="🚗">
                         <span class="text-2xl">🚗</span>
                         <span class="mt-1 text-sm">Car</span>
                     </button>
-                    <button onclick="selectTransport('autorickshaw')" class="flex flex-col items-center p-4 border rounded-md hover:bg-blue-50" data-icon="🛺">
+                    <button onclick="selectTransport('autorickshaw')" class="transport-btn flex flex-col items-center p-4 border rounded-md hover:bg-blue-100 transition" data-icon="🛺">
                         <span class="text-2xl">🛺</span>
                         <span class="mt-1 text-sm">Auto</span>
                     </button>
-                    <button onclick="selectTransport('bus')" class="flex flex-col items-center p-4 border rounded-md hover:bg-blue-50" data-icon="🚌">
+                    <button onclick="selectTransport('bus')" class="transport-btn flex flex-col items-center p-4 border rounded-md hover:bg-blue-100 transition" data-icon="🚌">
                         <span class="text-2xl">🚌</span>
                         <span class="mt-1 text-sm">Bus</span>
                     </button>

@@ -1,4 +1,4 @@
-let map, userMarker, destinationMarker, routeLine;
+﻿let map, userMarker, destinationMarker, routeLine;
 let selectedTransport = null;
 let isSharing = false;
 let timer = null;
@@ -112,16 +112,34 @@ function updateRoute() {
 
 function selectTransport(type) {
     selectedTransport = type;
-    document.querySelectorAll('.transport-btn').forEach(btn => {
-        btn.classList.remove('selected');
-    });
-    document.querySelector(`button[onclick="selectTransport('${type}')"]`).classList.add('selected');
 
-    // Update user marker with new transport icon
+    document.querySelectorAll('.transport-btn').forEach(btn => {
+        btn.classList.remove('bg-blue-200', 'border-blue-600');
+    });
+
+    const selectedBtn = Array.from(document.querySelectorAll('.transport-btn')).find(btn => {
+        return btn.innerText.includes(getTransportIconByType(type));
+    });
+
+    if (selectedBtn) {
+        selectedBtn.classList.add('bg-blue-200', 'border-blue-600');
+    }
+
+    // Update user marker
     if (userMarker) {
         const latlng = userMarker.getLatLng();
         createUserMarker(latlng);
     }
+}
+
+function getTransportIconByType(type) {
+    const icons = {
+        'walking': '🚶',
+        'car': '🚗',
+        'autorickshaw': '🛺',
+        'bus': '🚌'
+    };
+    return icons[type];
 }
 
 function addGuardian() {
@@ -143,9 +161,9 @@ function addGuardian() {
 function updateGuardiansList() {
     const list = document.getElementById('guardiansList');
     list.innerHTML = guardians.map(phone => `
-        <div class="guardian-item">
+        <div class="guardian-item bg-green-100 border border-green-400 text-green-800 p-2 rounded flex justify-between items-center text-sm font-medium">
             <span>${phone}</span>
-            <button onclick="removeGuardian('${phone}')">Remove</button>
+            <button onclick="removeGuardian('${phone}')" class="text-red-500 hover:text-red-700 font-semibold text-xs">Remove</button>
         </div>
     `).join('');
 }
@@ -252,10 +270,10 @@ function triggerSOS(reason = 'Manual SOS triggered') {
     const currentLocation = userMarker.getLatLng();
     const locationLink = `https://www.google.com/maps?q=${currentLocation.lat},${currentLocation.lng}`;
     const message = `
-        SOS ALERT!
-        Reason: ${reason}
-        Current Location: <a href="${locationLink}" target="_blank">View on Google Maps</a>
-        Time: ${new Date().toLocaleTimeString()}
+        <div class="font-bold text-red-700">🚨 SOS ALERT!</div>
+        <div class="text-xs">Reason: ${reason}</div>
+        <div class="text-xs mt-1"><a href="${locationLink}" target="_blank" class="text-blue-600 underline font-semibold">📍 View on Google Maps</a></div>
+        <div class="text-[11px] text-gray-500 mt-1">Time: ${new Date().toLocaleTimeString()}</div>
     `;
 
     notifyGuardians(message);
@@ -264,20 +282,18 @@ function triggerSOS(reason = 'Manual SOS triggered') {
 }
 
 function notifyGuardians(message) {
-    // In a real application, this would send SMS using a service
-    // For demo purposes, we'll just show the message
     const alertsDiv = document.getElementById('alerts');
     const alertElement = document.createElement('div');
-    alertElement.className = 'alert';
-    alertElement.innerHTML = message; // Changed from textContent to innerHTML to support links
+    alertElement.className = 'alert bg-orange-100 border border-orange-300 text-orange-800 px-3 py-2 rounded text-xs shadow-sm mb-2';
+    alertElement.innerHTML = message;
     alertsDiv.insertBefore(alertElement, alertsDiv.firstChild);
 }
 
 function showAlert(message) {
     const alertsDiv = document.getElementById('alerts');
     const alertElement = document.createElement('div');
-    alertElement.className = 'alert';
-    alertElement.innerHTML = message; // Changed from textContent to innerHTML to support links
+    alertElement.className = 'alert bg-orange-100 border border-orange-300 text-orange-800 px-3 py-2 rounded text-xs shadow-sm mb-2';
+    alertElement.innerHTML = message;
     alertsDiv.insertBefore(alertElement, alertsDiv.firstChild);
 }
 
